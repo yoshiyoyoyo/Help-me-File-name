@@ -1,928 +1,500 @@
-<!DOCTYPE html>
-
-<html lang="zh-TW">
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
 <head>
-
-    <meta charset="UTF-8">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>檔案名稱生成器</title>
-
-    <!-- Tailwind CSS CDN -->
-
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <style>
-
-        body {
-
-            font-family: 'Inter', sans-serif;
-
-            background-color: #f0f4f8;
-
-            display: flex;
-
-            justify-content: center;
-
-            align-items: center;
-
-            min-height: 100vh;
-
-            padding: 20px;
-
-        }
-
-        .container {
-
-            background-color: #ffffff;
-
-            padding: 32px;
-
-            border-radius: 12px;
-
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-
-            max-width: 600px;
-
-            width: 100%;
-
-        }
-
-        .form-group {
-
-            margin-bottom: 20px;
-
-        }
-
-        label {
-
-            display: block;
-
-            margin-bottom: 8px;
-
-            font-weight: 600;
-
-            color: #334155;
-
-        }
-
-        input[type="text"],
-
-        input[type="date"],
-
-        select {
-
-            width: 100%;
-
-            padding: 12px;
-
-            border: 1px solid #cbd5e1;
-
-            border-radius: 8px;
-
-            font-size: 16px;
-
-            color: #334155;
-
-            background-color: #f8fafc;
-
-            transition: border-color 0.2s;
-
-            min-height: 44px; /* Ensure consistent height for select and input */
-
-            box-sizing: border-box; /* Ensure consistent box model */
-
-        }
-
-        /* Specific alignment for select elements */
-
-        select {
-
-            text-indent: 2px; /* Adjust this value for visual alignment */
-
-        }
-
-        input[type="text"]:focus,
-
-        input[type="date"]:focus,
-
-        select:focus {
-
-            outline: none;
-
-            border-color: #3b82f6;
-
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
-
-        }
-
-        .required::after {
-
-            content: '*';
-
-            color: #ef4444;
-
-            margin-left: 4px;
-
-        }
-
-        .button-primary {
-
-            background-color: #3b82f6;
-
-            color: white;
-
-            padding: 12px 24px;
-
-            border-radius: 8px;
-
-            font-size: 18px;
-
-            font-weight: 600;
-
-            cursor: pointer;
-
-            transition: background-color 0.2s, transform 0.1s;
-
-            width: 100%;
-
-            border: none;
-
-        }
-
-        .button-primary:hover {
-
-            background-color: #2563eb;
-
-            transform: translateY(-1px);
-
-        }
-
-        .button-primary:active {
-
-            transform: translateY(0);
-
-        }
-
-        .output-section {
-
-            margin-top: 30px;
-
-            padding: 20px;
-
-            background-color: #e0f2fe;
-
-            border-radius: 8px;
-
-            border: 1px solid #93c5fd;
-
-            display: flex;
-
-            flex-direction: column;
-
-            gap: 15px;
-
-            align-items: center;
-
-        }
-
-        #generatedFilename {
-
-            background-color: #ffffff;
-
-            padding: 12px;
-
-            border-radius: 8px;
-
-            border: 1px solid #a7d9f8;
-
-            font-family: 'Courier New', Courier, monospace;
-
-            font-size: 16px;
-
-            color: #1e40af;
-
-            width: 100%;
-
-            word-break: break-all; /* Ensures long filenames wrap */
-
-            text-align: center;
-
-        }
-
-        .copy-button {
-
-            background-color: #10b981;
-
-            color: white;
-
-            padding: 10px 20px;
-
-            border-radius: 8px;
-
-            font-size: 16px;
-
-            font-weight: 600;
-
-            cursor: pointer;
-
-            transition: background-color 0.2s, transform 0.1s;
-
-            border: none;
-
-            display: flex;
-
-            align-items: center;
-
-            gap: 8px;
-
-        }
-
-        .copy-button:hover {
-
-            background-color: #059669;
-
-            transform: translateY(-1px);
-
-        }
-
-        .copy-button:active {
-
-            transform: translateY(0);
-
-        }
-
-        .error-message {
-
-            color: #ef4444;
-
-            font-size: 14px;
-
-            margin-top: 5px;
-
-        }
-
-        /* Flex container for select and custom input */
-
-        .select-with-custom, .input-with-button {
-
-            display: flex;
-
-            gap: 10px;
-
-            align-items: center; /* Align items vertically */
-
-        }
-
-        .select-with-custom select, .input-with-button input {
-
-            flex: 1; /* Allow select/input to take available space */
-
-        }
-
-        .select-with-custom .custom-input-wrapper {
-
-            flex: 1; /* Allow custom input wrapper to take available space */
-
-        }
-
-        .hidden {
-
-            display: none;
-
-        }
-
-        /* Removed .suggest-button and .loading-spinner styles as the feature is removed */
-
-    </style>
-
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2575.6">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Menlo; color: #4689cc; -webkit-text-stroke: #4689cc}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Menlo; color: #c27e65; -webkit-text-stroke: #c27e65}
+    p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Menlo; color: #8cd3fe; -webkit-text-stroke: #8cd3fe}
+    p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Menlo; color: #cacaca; -webkit-text-stroke: #cacaca}
+    p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Menlo; color: #6d7378; -webkit-text-stroke: #6d7378}
+    p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Menlo; color: #cacaca; -webkit-text-stroke: #cacaca; min-height: 16.0px}
+    p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Menlo; color: #71c083; -webkit-text-stroke: #71c083}
+    span.s1 {font-kerning: none; background-color: #171818}
+    span.s2 {font-kerning: none; color: #8cd3fe; background-color: #171818; -webkit-text-stroke: 0px #8cd3fe}
+    span.s3 {font-kerning: none; color: #6d6d6d; background-color: #171818; -webkit-text-stroke: 0px #6d6d6d}
+    span.s4 {font-kerning: none; color: #4689cc; background-color: #171818; -webkit-text-stroke: 0px #4689cc}
+    span.s5 {font-kerning: none; color: #cacaca; background-color: #171818; -webkit-text-stroke: 0px #cacaca}
+    span.s6 {font-kerning: none; color: #c27e65; background-color: #171818; -webkit-text-stroke: 0px #c27e65}
+    span.s7 {font-kerning: none; color: #d4d4d4; background-color: #171818; -webkit-text-stroke: 0px #d4d4d4}
+    span.s8 {font-kerning: none; color: #71c083; background-color: #171818; -webkit-text-stroke: 0px #71c083}
+    span.s9 {font-kerning: none; color: #a7c598; background-color: #171818; -webkit-text-stroke: 0px #a7c598}
+    span.s10 {font-kerning: none}
+    span.s11 {font-kerning: none; color: #6d7378; background-color: #171818; -webkit-text-stroke: 0px #6d7378}
+    span.s12 {font-kerning: none; color: #b76ff7; background-color: #171818; -webkit-text-stroke: 0px #b76ff7}
+    span.s13 {font-kerning: none; color: #36c0a0; background-color: #171818; -webkit-text-stroke: 0px #36c0a0}
+    span.s14 {font-kerning: none; color: #f67c30; background-color: #171818; -webkit-text-stroke: 0px #f67c30}
+  </style>
 </head>
-
 <body>
-
-    <div class="container">
-
-        <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">檔案名稱生成器</h1>
-
-
-
-        <div class="form-group">
-
-            <label for="prefix" class="required">前綴</label>
-
-            <div class="select-with-custom">
-
-                <select id="prefixSelect" class="w-full">
-
-                    <option value="">請選擇前綴</option>
-
-                    <option value="Gama Play">Gama Play (GP)</option>
-
-                    <option value="Gamania Web">Gamania Web (GM)</option>
-
-                    <option value="Glaxy">Glaxy (GXY)</option>
-
-                    <option value="平台發展部">平台發展部 (PL)</option>
-
-                    <option value="custom">自訂</option> <!-- Added custom option for prefix -->
-
-                </select>
-
-                <div id="prefixCustomWrapper" class="custom-input-wrapper hidden"> <!-- Wrapper for custom prefix input -->
-
-                    <input type="text" id="prefixCustom" placeholder="請輸入自訂前綴">
-
-                </div>
-
-            </div>
-
-            <div id="prefixError" class="error-message hidden">請選擇或輸入前綴。</div>
-
-        </div>
-
-
-
-        <div class="form-group">
-
-            <label for="category" class="required">類別</label>
-
-            <div class="select-with-custom">
-
-                <select id="categorySelect" class="w-full">
-
-                    <option value="">請選擇類別</option>
-
-                    <option value="產品需求文件">產品需求文件 (PRD)</option>
-
-                    <option value="會議記錄">會議記錄 (MoM)</option>
-
-                    <option value="軟體測試報告">軟體測試報告 (STR)</option>
-
-                    <option value="custom">自訂</option>
-
-                </select>
-
-                <div id="categoryCustomWrapper" class="custom-input-wrapper hidden">
-
-                    <input type="text" id="categoryCustom" placeholder="請輸入自訂類別">
-
-                </div>
-
-            </div>
-
-            <div id="categoryError" class="error-message hidden">請選擇或輸入類別。</div>
-
-        </div>
-
-
-
-        <div class="form-group">
-
-            <label for="subject" class="required">檔案主旨</label>
-
-            <!-- Removed the suggest subject button and its wrapper -->
-
-            <input type="text" id="subject" placeholder="請輸入檔案主旨">
-
-            <div id="subjectError" class="error-message hidden">請輸入檔案主旨。</div>
-
-        </div>
-
-
-
-        <div class="form-group">
-
-            <label for="version">版本號</label>
-
-            <input type="text" id="version" placeholder="例如: v1.0 或 v1.1">
-
-        </div>
-
-
-
-        <div class="form-group">
-
-            <label for="creationDate">創建日期</label>
-
-            <input type="date" id="creationDate">
-
-        </div>
-
-
-
-        <div class="form-group">
-
-            <label for="responsiblePerson">負責人名稱</label>
-
-            <div class="select-with-custom">
-
-                <select id="responsiblePersonSelect" class="w-full">
-
-                    <option value="">請選擇或自訂負責人</option>
-
-                    <option value="Mel">Mel</option>
-
-                    <option value="Yoshi">Yoshi</option>
-
-                    <option value="Eric">Eric</option>
-
-                    <option value="Iris">Iris</option>
-
-                    <option value="Jenny">Jenny</option>
-
-                    <option value="In">In</option>
-
-                    <option value="小鬼">小鬼</option>
-
-                    <option value="Tommy">Tommy</option> <!-- Added Tommy -->
-
-                    <option value="custom">自訂</option>
-
-                </select>
-
-                <div id="responsiblePersonCustomWrapper" class="custom-input-wrapper hidden">
-
-                    <input type="text" id="responsiblePersonCustom" placeholder="請輸入自訂負責人">
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-
-        <div class="form-group">
-
-            <label for="notes">特殊備註</label>
-
-            <input type="text" id="notes" placeholder="例如: 給Jack為4JacK">
-
-        </div>
-
-
-
-        <button id="generateBtn" class="button-primary">生成檔案名稱</button>
-
-
-
-        <div class="output-section">
-
-            <label for="generatedFilename" class="font-bold text-blue-800">生成的檔案名稱</label>
-
-            <div id="generatedFilename"></div>
-
-            <button id="copyBtn" class="copy-button">
-
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
-
-                    <path fill-rule="evenodd" d="M15.75 4.5a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-9a3 3 0 0 1-3-3v-9a3 3 0 0 1 3-3h9Zm.75 2.25a.75.75 0 0 0-1.5 0v.75h-.75a.75.75 0 0 0 0 1.5h.75v.75a.75.75 0 0 0 1.5 0v-.75h.75a.75.75 0 0 0 0-1.5h-.75V6.75Zm-9.75 2.25a.75.75 0 0 0-1.5 0v.75h-.75a.75.75 0 0 0 0 1.5h.75v.75a.75.75 0 0 0 1.5 0v-.75h.75a.75.75 0 0 0 0-1.5h-.75V9Zm-1.5 6.75a.75.75 0 0 0 0 1.5h.75v.75a.75.75 0 0 0 1.5 0v-.75h.75a.75.75 0 0 0 0-1.5h-.75v-.75a.75.75 0 0 0-1.5 0v.75h-.75Z" clip-rule="evenodd" />
-
-                </svg>
-
-                複製檔案名稱
-
-            </button>
-
-            <div id="copyMessage" class="text-green-600 text-sm hidden">已複製！</div>
-
-        </div>
-
-    </div>
-
-
-
-    <script>
-
-        // Get references to DOM elements
-
-        const prefixSelect = document.getElementById('prefixSelect'); // Updated ID
-
-        const prefixCustomInput = document.getElementById('prefixCustom'); // New
-
-        const prefixCustomWrapper = document.getElementById('prefixCustomWrapper'); // New
-
-
-
-        const categorySelect = document.getElementById('categorySelect');
-
-        const categoryCustomInput = document.getElementById('categoryCustom');
-
-        const categoryCustomWrapper = document.getElementById('categoryCustomWrapper');
-
-
-
-        const subjectInput = document.getElementById('subject');
-
-        // Removed references to suggestSubjectBtn, suggestSubjectText, suggestSubjectSpinner
-
-
-
-        const versionInput = document.getElementById('version');
-
-        const creationDateInput = document.getElementById('creationDate');
-
-
-
-        const responsiblePersonSelect = document.getElementById('responsiblePersonSelect');
-
-        const responsiblePersonCustomInput = document.getElementById('responsiblePersonCustom');
-
-        const responsiblePersonCustomWrapper = document.getElementById('responsiblePersonCustomWrapper');
-
-
-
-        const notesInput = document.getElementById('notes');
-
-        const generateBtn = document.getElementById('generateBtn');
-
-        const generatedFilenameDiv = document.getElementById('generatedFilename');
-
-        const copyBtn = document.getElementById('copyBtn');
-
-        const copyMessage = document.getElementById('copyMessage');
-
-
-
-        // Error message elements
-
-        const prefixError = document.getElementById('prefixError');
-
-        const categoryError = document.getElementById('categoryError');
-
-        const subjectError = document.getElementById('subjectError');
-
-
-
-        // Mapping for prefix abbreviations
-
-        const prefixMap = {
-
-            'Gama Play': 'GP',
-
-            'Gamania Web': 'GM',
-
-            'Glaxy': 'GXY',
-
-            '平台發展部': 'PL'
-
-        };
-
-
-
-        // Mapping for category abbreviations
-
-        const categoryMap = {
-
-            '產品需求文件': 'PRD',
-
-            '會議記錄': 'MoM',
-
-            '軟體測試報告': 'STR'
-
-        };
-
-
-
-        // Function to get today's date in YYYY-MM-DD format for date input
-
-        function getTodayDateForInput() {
-
-            const today = new Date();
-
-            const year = today.getFullYear();
-
-            const month = String(today.getMonth() + 1).padStart(2, '0');
-
-            const day = String(today.getDate()).padStart(2, '0');
-
-            return `${year}-${month}-${day}`;
-
-        }
-
-
-
-        // Function to format a YYYY-MM-DD date to YYMMDD
-
-        function formatToYYMMDD(dateString) {
-
-            if (!dateString) return '';
-
-            const [year, month, day] = dateString.split('-');
-
-            return `${year.slice(-2)}${month}${day}`;
-
-        }
-
-
-
-        // Set initial creation date to today
-
-        creationDateInput.value = getTodayDateForInput();
-
-
-
-        // Event listener for prefix selection/custom input
-
-        prefixSelect.addEventListener('change', () => {
-
-            if (prefixSelect.value === "custom") {
-
-                prefixCustomWrapper.classList.remove('hidden');
-
-                prefixCustomInput.value = "";
-
-            } else {
-
-                prefixCustomWrapper.classList.add('hidden');
-
-                prefixCustomInput.value = "";
-
-            }
-
-        });
-
-
-
-        // Event listener for category selection/custom input
-
-        categorySelect.addEventListener('change', () => {
-
-            if (categorySelect.value === "custom") {
-
-                categoryCustomWrapper.classList.remove('hidden');
-
-                categoryCustomInput.value = "";
-
-            } else {
-
-                categoryCustomWrapper.classList.add('hidden');
-
-                categoryCustomInput.value = "";
-
-            }
-
-        });
-
-
-
-        // Event listener for responsible person selection/custom input
-
-        responsiblePersonSelect.addEventListener('change', () => {
-
-            if (responsiblePersonSelect.value === "custom") {
-
-                responsiblePersonCustomWrapper.classList.remove('hidden');
-
-                responsiblePersonCustomInput.value = "";
-
-            } else {
-
-                responsiblePersonCustomWrapper.classList.add('hidden');
-
-                responsiblePersonCustomInput.value = "";
-
-            }
-
-        });
-
-
-
-        // Removed the suggestSubjectBtn event listener and associated Gemini API call
-
-
-
-        // Event listener for generate button
-
-        generateBtn.addEventListener('click', () => {
-
-            // Reset error messages
-
-            prefixError.classList.add('hidden');
-
-            categoryError.classList.add('hidden');
-
-            subjectError.classList.add('hidden');
-
-            copyMessage.classList.add('hidden');
-
-
-
-            // Get values from inputs
-
-            let selectedPrefix;
-
-            if (prefixSelect.value === "custom") {
-
-                selectedPrefix = prefixCustomInput.value.trim();
-
-            } else {
-
-                selectedPrefix = prefixSelect.value;
-
-            }
-
-
-
-            let category;
-
-            if (categorySelect.value === "custom") {
-
-                category = categoryCustomInput.value.trim();
-
-            } else {
-
-                category = categorySelect.value;
-
-            }
-
-            const subject = subjectInput.value.trim();
-
-            const version = versionInput.value.trim();
-
-            const creationDateRaw = creationDateInput.value;
-
-            const creationDateFormatted = formatToYYMMDD(creationDateRaw);
-
-
-
-            let responsiblePerson;
-
-            if (responsiblePersonSelect.value === "custom") {
-
-                responsiblePerson = responsiblePersonCustomInput.value.trim();
-
-            } else {
-
-                responsiblePerson = responsiblePersonSelect.value;
-
-            }
-
-            const notes = notesInput.value.trim();
-
-
-
-            // Validate mandatory fields
-
-            let isValid = true;
-
-            if (!selectedPrefix) {
-
-                prefixError.classList.remove('hidden');
-
-                isValid = false;
-
-            }
-
-            if (!category) {
-
-                categoryError.classList.remove('hidden');
-
-                isValid = false;
-
-            }
-
-            if (!subject) {
-
-                subjectError.classList.remove('hidden');
-
-                isValid = false;
-
-            }
-
-
-
-            if (!isValid) {
-
-                generatedFilenameDiv.textContent = "請填寫所有必填欄位。";
-
-                generatedFilenameDiv.style.color = '#ef4444';
-
-                return;
-
-            }
-
-
-
-            // Apply abbreviations
-
-            const abbrevPrefix = prefixMap[selectedPrefix] || selectedPrefix;
-
-            const abbrevCategory = categoryMap[category] || category;
-
-
-
-            // Construct filename parts, ensuring each is trimmed
-
-            const parts = [
-
-                abbrevPrefix,
-
-                abbrevCategory,
-
-                subject,
-
-                version,
-
-                creationDateFormatted,
-
-                responsiblePerson,
-
-                notes
-
-            ].map(part => part.trim()); // Trim each part to handle potential extra spaces
-
-
-
-            // Filter out empty strings before joining to prevent consecutive underscores and trailing underscores
-
-            const filteredParts = parts.filter(part => part !== '');
-
-
-
-            // Join parts with underscore
-
-            const filename = filteredParts.join('_');
-
-
-
-            generatedFilenameDiv.textContent = filename;
-
-            generatedFilenameDiv.style.color = '#1e40af';
-
-        });
-
-
-
-        // Event listener for copy button
-
-        copyBtn.addEventListener('click', () => {
-
-            const filename = generatedFilenameDiv.textContent;
-
-            if (filename && filename !== "請填寫所有必填欄位。") {
-
-                const textArea = document.createElement("textarea");
-
-                textArea.value = filename;
-
-                document.body.appendChild(textArea);
-
-                textArea.select();
-
-                try {
-
-                    document.execCommand('copy');
-
-                    copyMessage.classList.remove('hidden');
-
-                    setTimeout(() => {
-
-                        copyMessage.classList.add('hidden');
-
-                    }, 2000);
-
-                } catch (err) {
-
-                    console.error('Failed to copy: ', err);
-
-                    const modal = document.createElement('div');
-
-                    modal.style.cssText = `
-
-                        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-
-                        background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-
-                        z-index: 1000; text-align: center;
-
-                    `;
-
-                    modal.innerHTML = `
-
-                        <p>無法自動複製，請手動複製檔案名稱：</p>
-
-                        <textarea style="width: 100%; margin-top: 10px; padding: 5px;" readonly>${filename}</textarea>
-
-                        <button onclick="this.parentNode.remove()" style="margin-top: 15px; padding: 8px 15px; background-color: #3b82f6; color: white; border-radius: 5px; cursor: pointer;">關閉</button>
-
-                    `;
-
-                    document.body.appendChild(modal);
-
-                }
-
-                document.body.removeChild(textArea);
-
-            }
-
-        });
-
-    </script>
-
+<p class="p1"><span class="s1">&lt;!DOCTYPE</span><span class="s2"> html</span><span class="s1">&gt;</span></p>
+<p class="p2"><span class="s3">&lt;</span><span class="s4">html</span><span class="s5"> </span><span class="s2">lang</span><span class="s3">=</span><span class="s1">"zh-TW"</span><span class="s3">&gt;</span></p>
+<p class="p1"><span class="s3">&lt;</span><span class="s1">head</span><span class="s3">&gt;</span></p>
+<p class="p3"><span class="s5"><span class="Apple-converted-space">    </span></span><span class="s3">&lt;</span><span class="s4">meta</span><span class="s5"> </span><span class="s1">charset</span><span class="s3">=</span><span class="s6">"UTF-8"</span><span class="s3">&gt;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">    </span></span><span class="s3">&lt;</span><span class="s4">meta</span><span class="s5"> </span><span class="s2">name</span><span class="s3">=</span><span class="s1">"viewport"</span><span class="s5"> </span><span class="s2">content</span><span class="s3">=</span><span class="s1">"width=device-width, initial-scale=1.0"</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">    </span></span><span class="s3">&lt;</span><span class="s4">title</span><span class="s3">&gt;</span><span class="s1">檔案名稱生成器</span><span class="s3">&lt;/</span><span class="s4">title</span><span class="s3">&gt;</span></p>
+<p class="p5"><span class="s5"><span class="Apple-converted-space">    </span></span><span class="s1">&lt;!-- Tailwind CSS CDN --&gt;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">    </span></span><span class="s3">&lt;</span><span class="s4">script</span><span class="s5"> </span><span class="s2">src</span><span class="s3">=</span><span class="s1">"https://cdn.tailwindcss.com"</span><span class="s3">&gt;&lt;/</span><span class="s4">script</span><span class="s3">&gt;</span></p>
+<p class="p1"><span class="s5"><span class="Apple-converted-space">    </span></span><span class="s3">&lt;</span><span class="s1">style</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s4">body</span><span class="s1"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">font-family:</span><span class="s1"> </span><span class="s8">'Inter'</span><span class="s7">,</span><span class="s1"> </span><span class="s6">sans-serif</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">background-color:</span><span class="s1"> #f0f4f8</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">display:</span><span class="s1"> </span><span class="s6">flex</span><span class="s7">;</span></p>
+<p class="p3"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s1">justify-content:</span><span class="s5"> </span><span class="s6">center</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">align-items:</span><span class="s1"> </span><span class="s6">center</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">min-height:</span><span class="s1"> </span><span class="s9">100vh</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">padding:</span><span class="s1"> </span><span class="s9">20px</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s7">}</span></p>
+<p class="p1"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s1">.container</span><span class="s5"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">background-color:</span><span class="s1"> #ffffff</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">padding:</span><span class="s1"> </span><span class="s9">32px</span><span class="s7">;</span></p>
+<p class="p3"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s1">border-radius:</span><span class="s5"> </span><span class="s9">12px</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">box-shadow:</span><span class="s1"> </span><span class="s9">0</span><span class="s1"> </span><span class="s9">10px</span><span class="s1"> </span><span class="s9">25px</span><span class="s1"> </span><span class="s6">rgba(</span><span class="s9">0</span><span class="s7">,</span><span class="s1"> </span><span class="s9">0</span><span class="s7">,</span><span class="s1"> </span><span class="s9">0</span><span class="s7">,</span><span class="s1"> </span><span class="s9">0.1</span><span class="s6">)</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">max-width:</span><span class="s1"> </span><span class="s9">600px</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">width:</span><span class="s1"> </span><span class="s9">100%</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s7">}</span></p>
+<p class="p1"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s1">.form-group</span><span class="s5"> </span><span class="s7">{</span></p>
+<p class="p3"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s1">margin-bottom:</span><span class="s5"> </span><span class="s9">20px</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s7">}</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s4">label</span><span class="s1"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">display:</span><span class="s1"> </span><span class="s6">block</span><span class="s7">;</span></p>
+<p class="p3"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s1">margin-bottom:</span><span class="s5"> </span><span class="s9">8px</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">font-weight:</span><span class="s1"> </span><span class="s9">600</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">color:</span><span class="s1"> #334155</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s7">}</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s4">input</span><span class="s7">[</span><span class="s6">type</span><span class="s7">=</span><span class="s8">"text"</span><span class="s7">],</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s4">input</span><span class="s7">[</span><span class="s6">type</span><span class="s7">=</span><span class="s8">"date"</span><span class="s7">],</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s4">select</span><span class="s1"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">width:</span><span class="s1"> </span><span class="s9">100%</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">padding:</span><span class="s1"> </span><span class="s9">12px</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">border:</span><span class="s1"> </span><span class="s9">1px</span><span class="s1"> </span><span class="s6">solid</span><span class="s1"> #cbd5e1</span><span class="s7">;</span></p>
+<p class="p3"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s1">border-radius:</span><span class="s5"> </span><span class="s9">8px</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">font-size:</span><span class="s1"> </span><span class="s9">16px</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">color:</span><span class="s1"> #334155</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">background-color:</span><span class="s1"> #f8fafc</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">transition:</span><span class="s1"> </span><span class="s6">border-color</span><span class="s1"> </span><span class="s9">0.2s</span><span class="s7">;</span></p>
+<p class="p5"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s2">min-height:</span><span class="s5"> </span><span class="s9">44px</span><span class="s7">;</span><span class="s5"> </span><span class="s1">/* Ensure consistent height for select and input */</span></p>
+<p class="p5"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s2">box-sizing:</span><span class="s5"> </span><span class="s6">border-box</span><span class="s7">;</span><span class="s5"> </span><span class="s1">/* Ensure consistent box model */</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s7">}</span></p>
+<p class="p5"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s1">/* Specific alignment for select elements */</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s4">select</span><span class="s1"> </span><span class="s7">{</span></p>
+<p class="p5"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s2">text-indent:</span><span class="s5"> </span><span class="s9">2px</span><span class="s7">;</span><span class="s5"> </span><span class="s1">/* Adjust this value for visual alignment */</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s7">}</span></p>
+<p class="p1"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s1">input</span><span class="s7">[</span><span class="s6">type</span><span class="s7">=</span><span class="s8">"text"</span><span class="s7">]</span><span class="s1">:focus</span><span class="s7">,</span></p>
+<p class="p1"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s1">input</span><span class="s7">[</span><span class="s6">type</span><span class="s7">=</span><span class="s8">"date"</span><span class="s7">]</span><span class="s1">:focus</span><span class="s7">,</span></p>
+<p class="p1"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s1">select:focus</span><span class="s5"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">outline:</span><span class="s1"> </span><span class="s6">none</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">border-color:</span><span class="s1"> #3b82f6</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">box-shadow:</span><span class="s1"> </span><span class="s9">0</span><span class="s1"> </span><span class="s9">0</span><span class="s1"> </span><span class="s9">0</span><span class="s1"> </span><span class="s9">3px</span><span class="s1"> </span><span class="s6">rgba(</span><span class="s9">59</span><span class="s7">,</span><span class="s1"> </span><span class="s9">130</span><span class="s7">,</span><span class="s1"> </span><span class="s9">246</span><span class="s7">,</span><span class="s1"> </span><span class="s9">0.25</span><span class="s6">)</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s7">}</span></p>
+<p class="p1"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s1">.required::after</span><span class="s5"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">content:</span><span class="s1"> </span><span class="s8">'*'</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">color:</span><span class="s1"> #ef4444</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">margin-left:</span><span class="s1"> </span><span class="s9">4px</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s7">}</span></p>
+<p class="p1"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s1">.button-primary</span><span class="s5"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">background-color:</span><span class="s1"> #3b82f6</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">color:</span><span class="s1"> </span><span class="s6">white</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">padding:</span><span class="s1"> </span><span class="s9">12px</span><span class="s1"> </span><span class="s9">24px</span><span class="s7">;</span></p>
+<p class="p3"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s1">border-radius:</span><span class="s5"> </span><span class="s9">8px</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">font-size:</span><span class="s1"> </span><span class="s9">18px</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">font-weight:</span><span class="s1"> </span><span class="s9">600</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">cursor:</span><span class="s1"> </span><span class="s6">pointer</span><span class="s7">;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s2">transition:</span><span class="s5"> </span><span class="s1">background-color</span><span class="s5"> </span><span class="s9">0.2s</span><span class="s7">,</span><span class="s5"> </span><span class="s1">transform</span><span class="s5"> </span><span class="s9">0.1s</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">width:</span><span class="s1"> </span><span class="s9">100%</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">border:</span><span class="s1"> </span><span class="s6">none</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s7">}</span></p>
+<p class="p1"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s1">.button-primary:hover</span><span class="s5"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">background-color:</span><span class="s1"> #2563eb</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">transform:</span><span class="s1"> </span><span class="s6">translateY(</span><span class="s9">-1px</span><span class="s6">)</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s7">}</span></p>
+<p class="p1"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s1">.button-primary:active</span><span class="s5"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">transform:</span><span class="s1"> </span><span class="s6">translateY(</span><span class="s9">0</span><span class="s6">)</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s7">}</span></p>
+<p class="p1"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s1">.output-section</span><span class="s5"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">margin-top:</span><span class="s1"> </span><span class="s9">30px</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">padding:</span><span class="s1"> </span><span class="s9">20px</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">background-color:</span><span class="s1"> #e0f2fe</span><span class="s7">;</span></p>
+<p class="p3"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s1">border-radius:</span><span class="s5"> </span><span class="s9">8px</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">border:</span><span class="s1"> </span><span class="s9">1px</span><span class="s1"> </span><span class="s6">solid</span><span class="s1"> #93c5fd</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">display:</span><span class="s1"> </span><span class="s6">flex</span><span class="s7">;</span></p>
+<p class="p3"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s1">flex-direction:</span><span class="s5"> </span><span class="s6">column</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">gap:</span><span class="s1"> </span><span class="s9">15px</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">align-items:</span><span class="s1"> </span><span class="s6">center</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s7">}</span></p>
+<p class="p1"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s1">#generatedFilename</span><span class="s5"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">background-color:</span><span class="s1"> #ffffff</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">padding:</span><span class="s1"> </span><span class="s9">12px</span><span class="s7">;</span></p>
+<p class="p3"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s1">border-radius:</span><span class="s5"> </span><span class="s9">8px</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">border:</span><span class="s1"> </span><span class="s9">1px</span><span class="s1"> </span><span class="s6">solid</span><span class="s1"> #a7d9f8</span><span class="s7">;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s2">font-family:</span><span class="s5"> </span><span class="s8">'Courier New'</span><span class="s7">,</span><span class="s5"> </span><span class="s1">Courier</span><span class="s7">,</span><span class="s5"> </span><span class="s1">monospace</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">font-size:</span><span class="s1"> </span><span class="s9">16px</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">color:</span><span class="s1"> #1e40af</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">width:</span><span class="s1"> </span><span class="s9">100%</span><span class="s7">;</span></p>
+<p class="p5"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s2">word-break:</span><span class="s5"> </span><span class="s6">break-all</span><span class="s7">;</span><span class="s5"> </span><span class="s1">/* Ensures long filenames wrap */</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">text-align:</span><span class="s1"> </span><span class="s6">center</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s7">}</span></p>
+<p class="p1"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s1">.copy-button</span><span class="s5"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">background-color:</span><span class="s1"> #10b981</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">color:</span><span class="s1"> </span><span class="s6">white</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">padding:</span><span class="s1"> </span><span class="s9">10px</span><span class="s1"> </span><span class="s9">20px</span><span class="s7">;</span></p>
+<p class="p3"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s1">border-radius:</span><span class="s5"> </span><span class="s9">8px</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">font-size:</span><span class="s1"> </span><span class="s9">16px</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">font-weight:</span><span class="s1"> </span><span class="s9">600</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">cursor:</span><span class="s1"> </span><span class="s6">pointer</span><span class="s7">;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s2">transition:</span><span class="s5"> </span><span class="s1">background-color</span><span class="s5"> </span><span class="s9">0.2s</span><span class="s7">,</span><span class="s5"> </span><span class="s1">transform</span><span class="s5"> </span><span class="s9">0.1s</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">border:</span><span class="s1"> </span><span class="s6">none</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">display:</span><span class="s1"> </span><span class="s6">flex</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">align-items:</span><span class="s1"> </span><span class="s6">center</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">gap:</span><span class="s1"> </span><span class="s9">8px</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s7">}</span></p>
+<p class="p1"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s1">.copy-button:hover</span><span class="s5"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">background-color:</span><span class="s1"> #059669</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">transform:</span><span class="s1"> </span><span class="s6">translateY(</span><span class="s9">-1px</span><span class="s6">)</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s7">}</span></p>
+<p class="p1"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s1">.copy-button:active</span><span class="s5"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">transform:</span><span class="s1"> </span><span class="s6">translateY(</span><span class="s9">0</span><span class="s6">)</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s7">}</span></p>
+<p class="p1"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s1">.error-message</span><span class="s5"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">color:</span><span class="s1"> #ef4444</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">font-size:</span><span class="s1"> </span><span class="s9">14px</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">margin-top:</span><span class="s1"> </span><span class="s9">5px</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s7">}</span></p>
+<p class="p5"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s1">/* Flex container for select and custom input */</span></p>
+<p class="p1"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s1">.select-with-custom</span><span class="s7">,</span><span class="s5"> </span><span class="s1">.input-with-button</span><span class="s5"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">display:</span><span class="s1"> </span><span class="s6">flex</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">gap:</span><span class="s1"> </span><span class="s9">10px</span><span class="s7">;</span></p>
+<p class="p5"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s2">align-items:</span><span class="s5"> </span><span class="s6">center</span><span class="s7">;</span><span class="s5"> </span><span class="s1">/* Align items vertically */</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s7">}</span></p>
+<p class="p1"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s1">.select-with-custom</span><span class="s5"> </span><span class="s1">select</span><span class="s7">,</span><span class="s5"> </span><span class="s1">.input-with-button</span><span class="s5"> </span><span class="s1">input</span><span class="s5"> </span><span class="s7">{</span></p>
+<p class="p5"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s2">flex:</span><span class="s5"> </span><span class="s9">1</span><span class="s7">;</span><span class="s5"> </span><span class="s1">/* Allow select/input to take available space */</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s7">}</span></p>
+<p class="p1"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s1">.select-with-custom</span><span class="s5"> </span><span class="s1">.custom-input-wrapper</span><span class="s5"> </span><span class="s7">{</span></p>
+<p class="p5"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s2">flex:</span><span class="s5"> </span><span class="s9">1</span><span class="s7">;</span><span class="s5"> </span><span class="s1">/* Allow custom input wrapper to take available space */</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s7">}</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s4">.hidden</span><span class="s1"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">display:</span><span class="s1"> </span><span class="s6">none</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s7">}</span></p>
+<p class="p5"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s1">/* Removed .suggest-button and .loading-spinner styles as the feature is removed */</span></p>
+<p class="p1"><span class="s5"><span class="Apple-converted-space">    </span></span><span class="s3">&lt;/</span><span class="s1">style</span><span class="s3">&gt;</span></p>
+<p class="p1"><span class="s3">&lt;/</span><span class="s1">head</span><span class="s3">&gt;</span></p>
+<p class="p1"><span class="s3">&lt;</span><span class="s1">body</span><span class="s3">&gt;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">    </span></span><span class="s3">&lt;</span><span class="s4">div</span><span class="s5"> </span><span class="s2">class</span><span class="s3">=</span><span class="s1">"container"</span><span class="s3">&gt;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s3">&lt;</span><span class="s4">h1</span><span class="s5"> </span><span class="s2">class</span><span class="s3">=</span><span class="s1">"text-3xl font-bold text-center text-gray-800 mb-8"</span><span class="s3">&gt;</span><span class="s5">檔案名稱生成器</span><span class="s3">&lt;/</span><span class="s4">h1</span><span class="s3">&gt;</span></p>
+<p class="p6"><span class="s10"></span><br></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s3">&lt;</span><span class="s4">div</span><span class="s5"> </span><span class="s2">class</span><span class="s3">=</span><span class="s1">"form-group"</span><span class="s3">&gt;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s3">&lt;</span><span class="s4">label</span><span class="s5"> </span><span class="s2">for</span><span class="s3">=</span><span class="s1">"prefix"</span><span class="s5"> </span><span class="s2">class</span><span class="s3">=</span><span class="s1">"required"</span><span class="s3">&gt;</span><span class="s5">前綴</span><span class="s3">&lt;/</span><span class="s4">label</span><span class="s3">&gt;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s3">&lt;</span><span class="s4">div</span><span class="s5"> </span><span class="s2">class</span><span class="s3">=</span><span class="s1">"select-with-custom"</span><span class="s3">&gt;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">                </span></span><span class="s3">&lt;</span><span class="s4">select</span><span class="s5"> </span><span class="s2">id</span><span class="s3">=</span><span class="s1">"prefixSelect"</span><span class="s5"> </span><span class="s2">class</span><span class="s3">=</span><span class="s1">"w-full"</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                    </span></span><span class="s3">&lt;</span><span class="s4">option</span><span class="s1"> </span><span class="s2">value</span><span class="s3">=</span><span class="s6">""</span><span class="s3">&gt;</span><span class="s1">請選擇前綴</span><span class="s3">&lt;/</span><span class="s4">option</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                    </span></span><span class="s3">&lt;</span><span class="s4">option</span><span class="s1"> </span><span class="s2">value</span><span class="s3">=</span><span class="s6">"Gama Play"</span><span class="s3">&gt;</span><span class="s1">Gama Play (GP)</span><span class="s3">&lt;/</span><span class="s4">option</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                    </span></span><span class="s3">&lt;</span><span class="s4">option</span><span class="s1"> </span><span class="s2">value</span><span class="s3">=</span><span class="s6">"Gamania Web"</span><span class="s3">&gt;</span><span class="s1">Gamania Web (GM)</span><span class="s3">&lt;/</span><span class="s4">option</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                    </span></span><span class="s3">&lt;</span><span class="s4">option</span><span class="s1"> </span><span class="s2">value</span><span class="s3">=</span><span class="s6">"Glaxy"</span><span class="s3">&gt;</span><span class="s1">Glaxy (GXY)</span><span class="s3">&lt;/</span><span class="s4">option</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                    </span></span><span class="s3">&lt;</span><span class="s4">option</span><span class="s1"> </span><span class="s2">value</span><span class="s3">=</span><span class="s6">"平台發展部"</span><span class="s3">&gt;</span><span class="s1">平台發展部 (PL)</span><span class="s3">&lt;/</span><span class="s4">option</span><span class="s3">&gt;</span></p>
+<p class="p5"><span class="s5"><span class="Apple-converted-space">                    </span></span><span class="s3">&lt;</span><span class="s4">option</span><span class="s5"> </span><span class="s2">value</span><span class="s3">=</span><span class="s6">"custom"</span><span class="s3">&gt;</span><span class="s5">自訂</span><span class="s3">&lt;/</span><span class="s4">option</span><span class="s3">&gt;</span><span class="s5"> </span><span class="s1">&lt;!-- Added custom option for prefix --&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span></span><span class="s3">&lt;/</span><span class="s4">select</span><span class="s3">&gt;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">                </span></span><span class="s3">&lt;</span><span class="s4">div</span><span class="s5"> </span><span class="s2">id</span><span class="s3">=</span><span class="s1">"prefixCustomWrapper"</span><span class="s5"> </span><span class="s2">class</span><span class="s3">=</span><span class="s1">"custom-input-wrapper hidden"</span><span class="s3">&gt;</span><span class="s5"> </span><span class="s11">&lt;!-- Wrapper for custom prefix input --&gt;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">                    </span></span><span class="s3">&lt;</span><span class="s4">input</span><span class="s5"> </span><span class="s2">type</span><span class="s3">=</span><span class="s1">"text"</span><span class="s5"> </span><span class="s2">id</span><span class="s3">=</span><span class="s1">"prefixCustom"</span><span class="s5"> </span><span class="s2">placeholder</span><span class="s3">=</span><span class="s1">"請輸入自訂前綴"</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span></span><span class="s3">&lt;/</span><span class="s4">div</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s3">&lt;/</span><span class="s4">div</span><span class="s3">&gt;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s3">&lt;</span><span class="s4">div</span><span class="s5"> </span><span class="s2">id</span><span class="s3">=</span><span class="s1">"prefixError"</span><span class="s5"> </span><span class="s2">class</span><span class="s3">=</span><span class="s1">"error-message hidden"</span><span class="s3">&gt;</span><span class="s5">請選擇或輸入前綴。</span><span class="s3">&lt;/</span><span class="s4">div</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s3">&lt;/</span><span class="s4">div</span><span class="s3">&gt;</span></p>
+<p class="p6"><span class="s10"></span><br></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s3">&lt;</span><span class="s4">div</span><span class="s5"> </span><span class="s2">class</span><span class="s3">=</span><span class="s1">"form-group"</span><span class="s3">&gt;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s3">&lt;</span><span class="s4">label</span><span class="s5"> </span><span class="s2">for</span><span class="s3">=</span><span class="s1">"category"</span><span class="s5"> </span><span class="s2">class</span><span class="s3">=</span><span class="s1">"required"</span><span class="s3">&gt;</span><span class="s5">類別</span><span class="s3">&lt;/</span><span class="s4">label</span><span class="s3">&gt;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s3">&lt;</span><span class="s4">div</span><span class="s5"> </span><span class="s2">class</span><span class="s3">=</span><span class="s1">"select-with-custom"</span><span class="s3">&gt;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">                </span></span><span class="s3">&lt;</span><span class="s4">select</span><span class="s5"> </span><span class="s2">id</span><span class="s3">=</span><span class="s1">"categorySelect"</span><span class="s5"> </span><span class="s2">class</span><span class="s3">=</span><span class="s1">"w-full"</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                    </span></span><span class="s3">&lt;</span><span class="s4">option</span><span class="s1"> </span><span class="s2">value</span><span class="s3">=</span><span class="s6">""</span><span class="s3">&gt;</span><span class="s1">請選擇類別</span><span class="s3">&lt;/</span><span class="s4">option</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                    </span></span><span class="s3">&lt;</span><span class="s4">option</span><span class="s1"> </span><span class="s2">value</span><span class="s3">=</span><span class="s6">"產品需求文件"</span><span class="s3">&gt;</span><span class="s1">產品需求文件 (PRD)</span><span class="s3">&lt;/</span><span class="s4">option</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                    </span></span><span class="s3">&lt;</span><span class="s4">option</span><span class="s1"> </span><span class="s2">value</span><span class="s3">=</span><span class="s6">"會議記錄"</span><span class="s3">&gt;</span><span class="s1">會議記錄 (MoM)</span><span class="s3">&lt;/</span><span class="s4">option</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                    </span></span><span class="s3">&lt;</span><span class="s4">option</span><span class="s1"> </span><span class="s2">value</span><span class="s3">=</span><span class="s6">"軟體測試報告"</span><span class="s3">&gt;</span><span class="s1">軟體測試報告 (STR)</span><span class="s3">&lt;/</span><span class="s4">option</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                    </span></span><span class="s3">&lt;</span><span class="s4">option</span><span class="s1"> </span><span class="s2">value</span><span class="s3">=</span><span class="s6">"custom"</span><span class="s3">&gt;</span><span class="s1">自訂</span><span class="s3">&lt;/</span><span class="s4">option</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span></span><span class="s3">&lt;/</span><span class="s4">select</span><span class="s3">&gt;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">                </span></span><span class="s3">&lt;</span><span class="s4">div</span><span class="s5"> </span><span class="s2">id</span><span class="s3">=</span><span class="s1">"categoryCustomWrapper"</span><span class="s5"> </span><span class="s2">class</span><span class="s3">=</span><span class="s1">"custom-input-wrapper hidden"</span><span class="s3">&gt;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">                    </span></span><span class="s3">&lt;</span><span class="s4">input</span><span class="s5"> </span><span class="s2">type</span><span class="s3">=</span><span class="s1">"text"</span><span class="s5"> </span><span class="s2">id</span><span class="s3">=</span><span class="s1">"categoryCustom"</span><span class="s5"> </span><span class="s2">placeholder</span><span class="s3">=</span><span class="s1">"請輸入自訂類別"</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span></span><span class="s3">&lt;/</span><span class="s4">div</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s3">&lt;/</span><span class="s4">div</span><span class="s3">&gt;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s3">&lt;</span><span class="s4">div</span><span class="s5"> </span><span class="s2">id</span><span class="s3">=</span><span class="s1">"categoryError"</span><span class="s5"> </span><span class="s2">class</span><span class="s3">=</span><span class="s1">"error-message hidden"</span><span class="s3">&gt;</span><span class="s5">請選擇或輸入類別。</span><span class="s3">&lt;/</span><span class="s4">div</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s3">&lt;/</span><span class="s4">div</span><span class="s3">&gt;</span></p>
+<p class="p6"><span class="s10"></span><br></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s3">&lt;</span><span class="s4">div</span><span class="s5"> </span><span class="s2">class</span><span class="s3">=</span><span class="s1">"form-group"</span><span class="s3">&gt;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s3">&lt;</span><span class="s4">label</span><span class="s5"> </span><span class="s2">for</span><span class="s3">=</span><span class="s1">"subject"</span><span class="s5"> </span><span class="s2">class</span><span class="s3">=</span><span class="s1">"required"</span><span class="s3">&gt;</span><span class="s5">檔案主旨</span><span class="s3">&lt;/</span><span class="s4">label</span><span class="s3">&gt;</span></p>
+<p class="p5"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s1">&lt;!-- Removed the suggest subject button and its wrapper --&gt;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s3">&lt;</span><span class="s4">input</span><span class="s5"> </span><span class="s2">type</span><span class="s3">=</span><span class="s1">"text"</span><span class="s5"> </span><span class="s2">id</span><span class="s3">=</span><span class="s1">"subject"</span><span class="s5"> </span><span class="s2">placeholder</span><span class="s3">=</span><span class="s1">"請輸入檔案主旨"</span><span class="s3">&gt;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s3">&lt;</span><span class="s4">div</span><span class="s5"> </span><span class="s2">id</span><span class="s3">=</span><span class="s1">"subjectError"</span><span class="s5"> </span><span class="s2">class</span><span class="s3">=</span><span class="s1">"error-message hidden"</span><span class="s3">&gt;</span><span class="s5">請輸入檔案主旨。</span><span class="s3">&lt;/</span><span class="s4">div</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s3">&lt;/</span><span class="s4">div</span><span class="s3">&gt;</span></p>
+<p class="p6"><span class="s10"></span><br></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s3">&lt;</span><span class="s4">div</span><span class="s5"> </span><span class="s2">class</span><span class="s3">=</span><span class="s1">"form-group"</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s3">&lt;</span><span class="s4">label</span><span class="s1"> </span><span class="s2">for</span><span class="s3">=</span><span class="s6">"version"</span><span class="s3">&gt;</span><span class="s1">版本號</span><span class="s3">&lt;/</span><span class="s4">label</span><span class="s3">&gt;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s3">&lt;</span><span class="s4">input</span><span class="s5"> </span><span class="s2">type</span><span class="s3">=</span><span class="s1">"text"</span><span class="s5"> </span><span class="s2">id</span><span class="s3">=</span><span class="s1">"version"</span><span class="s5"> </span><span class="s2">placeholder</span><span class="s3">=</span><span class="s1">"例如: v1.0 或 v1.1"</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s3">&lt;/</span><span class="s4">div</span><span class="s3">&gt;</span></p>
+<p class="p6"><span class="s10"></span><br></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s3">&lt;</span><span class="s4">div</span><span class="s5"> </span><span class="s2">class</span><span class="s3">=</span><span class="s1">"form-group"</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s3">&lt;</span><span class="s4">label</span><span class="s1"> </span><span class="s2">for</span><span class="s3">=</span><span class="s6">"creationDate"</span><span class="s3">&gt;</span><span class="s1">創建日期</span><span class="s3">&lt;/</span><span class="s4">label</span><span class="s3">&gt;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s3">&lt;</span><span class="s4">input</span><span class="s5"> </span><span class="s2">type</span><span class="s3">=</span><span class="s1">"date"</span><span class="s5"> </span><span class="s2">id</span><span class="s3">=</span><span class="s1">"creationDate"</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s3">&lt;/</span><span class="s4">div</span><span class="s3">&gt;</span></p>
+<p class="p6"><span class="s10"></span><br></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s3">&lt;</span><span class="s4">div</span><span class="s5"> </span><span class="s2">class</span><span class="s3">=</span><span class="s1">"form-group"</span><span class="s3">&gt;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s3">&lt;</span><span class="s4">label</span><span class="s5"> </span><span class="s2">for</span><span class="s3">=</span><span class="s1">"responsiblePerson"</span><span class="s3">&gt;</span><span class="s5">負責人名稱</span><span class="s3">&lt;/</span><span class="s4">label</span><span class="s3">&gt;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s3">&lt;</span><span class="s4">div</span><span class="s5"> </span><span class="s2">class</span><span class="s3">=</span><span class="s1">"select-with-custom"</span><span class="s3">&gt;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">                </span></span><span class="s3">&lt;</span><span class="s4">select</span><span class="s5"> </span><span class="s2">id</span><span class="s3">=</span><span class="s1">"responsiblePersonSelect"</span><span class="s5"> </span><span class="s2">class</span><span class="s3">=</span><span class="s1">"w-full"</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                    </span></span><span class="s3">&lt;</span><span class="s4">option</span><span class="s1"> </span><span class="s2">value</span><span class="s3">=</span><span class="s6">""</span><span class="s3">&gt;</span><span class="s1">請選擇或自訂負責人</span><span class="s3">&lt;/</span><span class="s4">option</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                    </span></span><span class="s3">&lt;</span><span class="s4">option</span><span class="s1"> </span><span class="s2">value</span><span class="s3">=</span><span class="s6">"Mel"</span><span class="s3">&gt;</span><span class="s1">Mel</span><span class="s3">&lt;/</span><span class="s4">option</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                    </span></span><span class="s3">&lt;</span><span class="s4">option</span><span class="s1"> </span><span class="s2">value</span><span class="s3">=</span><span class="s6">"Yoshi"</span><span class="s3">&gt;</span><span class="s1">Yoshi</span><span class="s3">&lt;/</span><span class="s4">option</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                    </span></span><span class="s3">&lt;</span><span class="s4">option</span><span class="s1"> </span><span class="s2">value</span><span class="s3">=</span><span class="s6">"Eric"</span><span class="s3">&gt;</span><span class="s1">Eric</span><span class="s3">&lt;/</span><span class="s4">option</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                    </span></span><span class="s3">&lt;</span><span class="s4">option</span><span class="s1"> </span><span class="s2">value</span><span class="s3">=</span><span class="s6">"Iris"</span><span class="s3">&gt;</span><span class="s1">Iris</span><span class="s3">&lt;/</span><span class="s4">option</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                    </span></span><span class="s3">&lt;</span><span class="s4">option</span><span class="s1"> </span><span class="s2">value</span><span class="s3">=</span><span class="s6">"Jenny"</span><span class="s3">&gt;</span><span class="s1">Jenny</span><span class="s3">&lt;/</span><span class="s4">option</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                    </span></span><span class="s3">&lt;</span><span class="s4">option</span><span class="s1"> </span><span class="s2">value</span><span class="s3">=</span><span class="s6">"In"</span><span class="s3">&gt;</span><span class="s1">In</span><span class="s3">&lt;/</span><span class="s4">option</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                    </span></span><span class="s3">&lt;</span><span class="s4">option</span><span class="s1"> </span><span class="s2">value</span><span class="s3">=</span><span class="s6">"小鬼"</span><span class="s3">&gt;</span><span class="s1">小鬼</span><span class="s3">&lt;/</span><span class="s4">option</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                    </span></span><span class="s3">&lt;</span><span class="s4">option</span><span class="s1"> </span><span class="s2">value</span><span class="s3">=</span><span class="s6">"Tommy"</span><span class="s3">&gt;</span><span class="s1">Tommy</span><span class="s3">&lt;/</span><span class="s4">option</span><span class="s3">&gt;</span><span class="s1"> </span><span class="s11">&lt;!-- Added Tommy --&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                    </span></span><span class="s3">&lt;</span><span class="s4">option</span><span class="s1"> </span><span class="s2">value</span><span class="s3">=</span><span class="s6">"custom"</span><span class="s3">&gt;</span><span class="s1">自訂</span><span class="s3">&lt;/</span><span class="s4">option</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span></span><span class="s3">&lt;/</span><span class="s4">select</span><span class="s3">&gt;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">                </span></span><span class="s3">&lt;</span><span class="s4">div</span><span class="s5"> </span><span class="s2">id</span><span class="s3">=</span><span class="s1">"responsiblePersonCustomWrapper"</span><span class="s5"> </span><span class="s2">class</span><span class="s3">=</span><span class="s1">"custom-input-wrapper hidden"</span><span class="s3">&gt;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">                    </span></span><span class="s3">&lt;</span><span class="s4">input</span><span class="s5"> </span><span class="s2">type</span><span class="s3">=</span><span class="s1">"text"</span><span class="s5"> </span><span class="s2">id</span><span class="s3">=</span><span class="s1">"responsiblePersonCustom"</span><span class="s5"> </span><span class="s2">placeholder</span><span class="s3">=</span><span class="s1">"請輸入自訂負責人"</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span></span><span class="s3">&lt;/</span><span class="s4">div</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s3">&lt;/</span><span class="s4">div</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s3">&lt;/</span><span class="s4">div</span><span class="s3">&gt;</span></p>
+<p class="p6"><span class="s10"></span><br></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s3">&lt;</span><span class="s4">div</span><span class="s5"> </span><span class="s2">class</span><span class="s3">=</span><span class="s1">"form-group"</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s3">&lt;</span><span class="s4">label</span><span class="s1"> </span><span class="s2">for</span><span class="s3">=</span><span class="s6">"notes"</span><span class="s3">&gt;</span><span class="s1">特殊備註</span><span class="s3">&lt;/</span><span class="s4">label</span><span class="s3">&gt;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s3">&lt;</span><span class="s4">input</span><span class="s5"> </span><span class="s2">type</span><span class="s3">=</span><span class="s1">"text"</span><span class="s5"> </span><span class="s2">id</span><span class="s3">=</span><span class="s1">"notes"</span><span class="s5"> </span><span class="s2">placeholder</span><span class="s3">=</span><span class="s1">"例如: 給Jack為4JacK"</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s3">&lt;/</span><span class="s4">div</span><span class="s3">&gt;</span></p>
+<p class="p6"><span class="s10"></span><br></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s3">&lt;</span><span class="s4">button</span><span class="s5"> </span><span class="s2">id</span><span class="s3">=</span><span class="s1">"generateBtn"</span><span class="s5"> </span><span class="s2">class</span><span class="s3">=</span><span class="s1">"button-primary"</span><span class="s3">&gt;</span><span class="s5">生成檔案名稱</span><span class="s3">&lt;/</span><span class="s4">button</span><span class="s3">&gt;</span></p>
+<p class="p6"><span class="s10"></span><br></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s3">&lt;</span><span class="s4">div</span><span class="s5"> </span><span class="s2">class</span><span class="s3">=</span><span class="s1">"output-section"</span><span class="s3">&gt;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s3">&lt;</span><span class="s4">label</span><span class="s5"> </span><span class="s2">for</span><span class="s3">=</span><span class="s1">"generatedFilename"</span><span class="s5"> </span><span class="s2">class</span><span class="s3">=</span><span class="s1">"font-bold text-blue-800"</span><span class="s3">&gt;</span><span class="s5">生成的檔案名稱</span><span class="s3">&lt;/</span><span class="s4">label</span><span class="s3">&gt;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s3">&lt;</span><span class="s4">div</span><span class="s5"> </span><span class="s2">id</span><span class="s3">=</span><span class="s1">"generatedFilename"</span><span class="s3">&gt;&lt;/</span><span class="s4">div</span><span class="s3">&gt;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s3">&lt;</span><span class="s4">button</span><span class="s5"> </span><span class="s2">id</span><span class="s3">=</span><span class="s1">"copyBtn"</span><span class="s5"> </span><span class="s2">class</span><span class="s3">=</span><span class="s1">"copy-button"</span><span class="s3">&gt;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">                </span></span><span class="s3">&lt;</span><span class="s4">svg</span><span class="s5"> </span><span class="s2">xmlns</span><span class="s3">=</span><span class="s1">"http://www.w3.org/2000/svg"</span><span class="s5"> </span><span class="s2">viewBox</span><span class="s3">=</span><span class="s1">"0 0 24 24"</span><span class="s5"> </span><span class="s2">fill</span><span class="s3">=</span><span class="s1">"currentColor"</span><span class="s5"> </span><span class="s2">class</span><span class="s3">=</span><span class="s1">"w-5 h-5"</span><span class="s3">&gt;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">                    </span></span><span class="s3">&lt;</span><span class="s4">path</span><span class="s5"> </span><span class="s2">fill-rule</span><span class="s3">=</span><span class="s1">"evenodd"</span><span class="s5"> </span><span class="s2">d</span><span class="s3">=</span><span class="s1">"M15.75 4.5a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-9a3 3 0 0 1-3-3v-9a3 3 0 0 1 3-3h9Zm.75 2.25a.75.75 0 0 0-1.5 0v.75h-.75a.75.75 0 0 0 0 1.5h.75v.75a.75.75 0 0 0 1.5 0v-.75h.75a.75.75 0 0 0 0-1.5h-.75V6.75Zm-9.75 2.25a.75.75 0 0 0-1.5 0v.75h-.75a.75.75 0 0 0 0 1.5h.75v.75a.75.75 0 0 0 1.5 0v-.75h.75a.75.75 0 0 0 0-1.5h-.75V9Zm-1.5 6.75a.75.75 0 0 0 0 1.5h.75v.75a.75.75 0 0 0 1.5 0v-.75h.75a.75.75 0 0 0 0-1.5h-.75v-.75a.75.75 0 0 0-1.5 0v.75h-.75Z"</span><span class="s5"> </span><span class="s2">clip-rule</span><span class="s3">=</span><span class="s1">"evenodd"</span><span class="s5"> </span><span class="s3">/&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span></span><span class="s3">&lt;/</span><span class="s4">svg</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span>複製檔案名稱</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s3">&lt;/</span><span class="s4">button</span><span class="s3">&gt;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s3">&lt;</span><span class="s4">div</span><span class="s5"> </span><span class="s2">id</span><span class="s3">=</span><span class="s1">"copyMessage"</span><span class="s5"> </span><span class="s2">class</span><span class="s3">=</span><span class="s1">"text-green-600 text-sm hidden"</span><span class="s3">&gt;</span><span class="s5">已複製！</span><span class="s3">&lt;/</span><span class="s4">div</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s3">&lt;/</span><span class="s4">div</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">    </span></span><span class="s3">&lt;/</span><span class="s4">div</span><span class="s3">&gt;</span></p>
+<p class="p6"><span class="s10"></span><br></p>
+<p class="p1"><span class="s5"><span class="Apple-converted-space">    </span></span><span class="s3">&lt;</span><span class="s1">script</span><span class="s3">&gt;</span></p>
+<p class="p5"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s1">// Get references to DOM elements</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s12">const</span><span class="s1"> prefixSelect </span><span class="s7">=</span><span class="s1"> document</span><span class="s7">.</span><span class="s1">getElementById</span><span class="s7">(</span><span class="s8">'prefixSelect'</span><span class="s7">);</span><span class="s1"> </span><span class="s11">// Updated ID</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s12">const</span><span class="s1"> prefixCustomInput </span><span class="s7">=</span><span class="s1"> document</span><span class="s7">.</span><span class="s1">getElementById</span><span class="s7">(</span><span class="s8">'prefixCustom'</span><span class="s7">);</span><span class="s1"> </span><span class="s11">// New</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s12">const</span><span class="s1"> prefixCustomWrapper </span><span class="s7">=</span><span class="s1"> document</span><span class="s7">.</span><span class="s1">getElementById</span><span class="s7">(</span><span class="s8">'prefixCustomWrapper'</span><span class="s7">);</span><span class="s1"> </span><span class="s11">// New</span></p>
+<p class="p6"><span class="s10"></span><br></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s12">const</span><span class="s1"> categorySelect </span><span class="s7">=</span><span class="s1"> document</span><span class="s7">.</span><span class="s1">getElementById</span><span class="s7">(</span><span class="s8">'categorySelect'</span><span class="s7">);</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s12">const</span><span class="s1"> categoryCustomInput </span><span class="s7">=</span><span class="s1"> document</span><span class="s7">.</span><span class="s1">getElementById</span><span class="s7">(</span><span class="s8">'categoryCustom'</span><span class="s7">);</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s12">const</span><span class="s1"> categoryCustomWrapper </span><span class="s7">=</span><span class="s1"> document</span><span class="s7">.</span><span class="s1">getElementById</span><span class="s7">(</span><span class="s8">'categoryCustomWrapper'</span><span class="s7">);</span></p>
+<p class="p6"><span class="s10"></span><br></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s12">const</span><span class="s1"> subjectInput </span><span class="s7">=</span><span class="s1"> document</span><span class="s7">.</span><span class="s1">getElementById</span><span class="s7">(</span><span class="s8">'subject'</span><span class="s7">);</span></p>
+<p class="p5"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s1">// Removed references to suggestSubjectBtn, suggestSubjectText, suggestSubjectSpinner</span></p>
+<p class="p6"><span class="s10"></span><br></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s12">const</span><span class="s1"> versionInput </span><span class="s7">=</span><span class="s1"> document</span><span class="s7">.</span><span class="s1">getElementById</span><span class="s7">(</span><span class="s8">'version'</span><span class="s7">);</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s12">const</span><span class="s1"> creationDateInput </span><span class="s7">=</span><span class="s1"> document</span><span class="s7">.</span><span class="s1">getElementById</span><span class="s7">(</span><span class="s8">'creationDate'</span><span class="s7">);</span></p>
+<p class="p6"><span class="s10"></span><br></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s12">const</span><span class="s1"> responsiblePersonSelect </span><span class="s7">=</span><span class="s1"> document</span><span class="s7">.</span><span class="s1">getElementById</span><span class="s7">(</span><span class="s8">'responsiblePersonSelect'</span><span class="s7">);</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s12">const</span><span class="s1"> responsiblePersonCustomInput </span><span class="s7">=</span><span class="s1"> document</span><span class="s7">.</span><span class="s1">getElementById</span><span class="s7">(</span><span class="s8">'responsiblePersonCustom'</span><span class="s7">);</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s12">const</span><span class="s1"> responsiblePersonCustomWrapper </span><span class="s7">=</span><span class="s1"> document</span><span class="s7">.</span><span class="s1">getElementById</span><span class="s7">(</span><span class="s8">'responsiblePersonCustomWrapper'</span><span class="s7">);</span></p>
+<p class="p6"><span class="s10"></span><br></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s12">const</span><span class="s1"> notesInput </span><span class="s7">=</span><span class="s1"> document</span><span class="s7">.</span><span class="s1">getElementById</span><span class="s7">(</span><span class="s8">'notes'</span><span class="s7">);</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s12">const</span><span class="s1"> generateBtn </span><span class="s7">=</span><span class="s1"> document</span><span class="s7">.</span><span class="s1">getElementById</span><span class="s7">(</span><span class="s8">'generateBtn'</span><span class="s7">);</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s12">const</span><span class="s1"> generatedFilenameDiv </span><span class="s7">=</span><span class="s1"> document</span><span class="s7">.</span><span class="s1">getElementById</span><span class="s7">(</span><span class="s8">'generatedFilename'</span><span class="s7">);</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s12">const</span><span class="s1"> copyBtn </span><span class="s7">=</span><span class="s1"> document</span><span class="s7">.</span><span class="s1">getElementById</span><span class="s7">(</span><span class="s8">'copyBtn'</span><span class="s7">);</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s12">const</span><span class="s1"> copyMessage </span><span class="s7">=</span><span class="s1"> document</span><span class="s7">.</span><span class="s1">getElementById</span><span class="s7">(</span><span class="s8">'copyMessage'</span><span class="s7">);</span></p>
+<p class="p6"><span class="s10"></span><br></p>
+<p class="p5"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s1">// Error message elements</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s12">const</span><span class="s1"> prefixError </span><span class="s7">=</span><span class="s1"> document</span><span class="s7">.</span><span class="s1">getElementById</span><span class="s7">(</span><span class="s8">'prefixError'</span><span class="s7">);</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s12">const</span><span class="s1"> categoryError </span><span class="s7">=</span><span class="s1"> document</span><span class="s7">.</span><span class="s1">getElementById</span><span class="s7">(</span><span class="s8">'categoryError'</span><span class="s7">);</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s12">const</span><span class="s1"> subjectError </span><span class="s7">=</span><span class="s1"> document</span><span class="s7">.</span><span class="s1">getElementById</span><span class="s7">(</span><span class="s8">'subjectError'</span><span class="s7">);</span></p>
+<p class="p6"><span class="s10"></span><br></p>
+<p class="p5"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s1">// Mapping for prefix abbreviations</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s12">const</span><span class="s1"> prefixMap </span><span class="s7">=</span><span class="s1"> </span><span class="s7">{</span></p>
+<p class="p7"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s1">'Gama Play'</span><span class="s7">:</span><span class="s5"> </span><span class="s1">'GP'</span><span class="s7">,</span></p>
+<p class="p7"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s1">'Gamania Web'</span><span class="s7">:</span><span class="s5"> </span><span class="s1">'GM'</span><span class="s7">,</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s8">'Glaxy'</span><span class="s7">:</span><span class="s1"> </span><span class="s8">'GXY'</span><span class="s7">,</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s8">'平台發展部'</span><span class="s7">:</span><span class="s1"> </span><span class="s8">'PL'</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s7">};</span></p>
+<p class="p6"><span class="s10"></span><br></p>
+<p class="p5"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s1">// Mapping for category abbreviations</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s12">const</span><span class="s1"> categoryMap </span><span class="s7">=</span><span class="s1"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s8">'產品需求文件'</span><span class="s7">:</span><span class="s1"> </span><span class="s8">'PRD'</span><span class="s7">,</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s8">'會議記錄'</span><span class="s7">:</span><span class="s1"> </span><span class="s8">'MoM'</span><span class="s7">,</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s8">'軟體測試報告'</span><span class="s7">:</span><span class="s1"> </span><span class="s8">'STR'</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s7">};</span></p>
+<p class="p6"><span class="s10"></span><br></p>
+<p class="p5"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s1">// Function to get today's date in YYYY-MM-DD format for date input</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s12">function</span><span class="s1"> getTodayDateForInput</span><span class="s7">()</span><span class="s1"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s12">const</span><span class="s1"> today </span><span class="s7">=</span><span class="s1"> </span><span class="s12">new</span><span class="s1"> </span><span class="s13">Date</span><span class="s7">();</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s12">const</span><span class="s1"> year </span><span class="s7">=</span><span class="s1"> today</span><span class="s7">.</span><span class="s1">getFullYear</span><span class="s7">();</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s12">const</span><span class="s1"> month </span><span class="s7">=</span><span class="s1"> </span><span class="s13">String</span><span class="s7">(</span><span class="s1">today</span><span class="s7">.</span><span class="s1">getMonth</span><span class="s7">()</span><span class="s1"> </span><span class="s7">+</span><span class="s1"> </span><span class="s14">1</span><span class="s7">).</span><span class="s1">padStart</span><span class="s7">(</span><span class="s14">2</span><span class="s7">,</span><span class="s1"> </span><span class="s8">'0'</span><span class="s7">);</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s12">const</span><span class="s1"> day </span><span class="s7">=</span><span class="s1"> </span><span class="s13">String</span><span class="s7">(</span><span class="s1">today</span><span class="s7">.</span><span class="s1">getDate</span><span class="s7">()).</span><span class="s1">padStart</span><span class="s7">(</span><span class="s14">2</span><span class="s7">,</span><span class="s1"> </span><span class="s8">'0'</span><span class="s7">);</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s12">return</span><span class="s1"> </span><span class="s8">`</span><span class="s7">${</span><span class="s1">year</span><span class="s7">}</span><span class="s8">-</span><span class="s7">${</span><span class="s1">month</span><span class="s7">}</span><span class="s8">-</span><span class="s7">${</span><span class="s1">day</span><span class="s7">}</span><span class="s8">`</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s7">}</span></p>
+<p class="p6"><span class="s10"></span><br></p>
+<p class="p5"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s1">// Function to format a YYYY-MM-DD date to YYMMDD</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s12">function</span><span class="s1"> formatToYYMMDD</span><span class="s7">(</span><span class="s1">dateString</span><span class="s7">)</span><span class="s1"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s12">if</span><span class="s1"> </span><span class="s7">(!</span><span class="s1">dateString</span><span class="s7">)</span><span class="s1"> </span><span class="s12">return</span><span class="s1"> </span><span class="s8">''</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s12">const</span><span class="s1"> </span><span class="s7">[</span><span class="s1">year</span><span class="s7">,</span><span class="s1"> month</span><span class="s7">,</span><span class="s1"> day</span><span class="s7">]</span><span class="s1"> </span><span class="s7">=</span><span class="s1"> dateString</span><span class="s7">.</span><span class="s1">split</span><span class="s7">(</span><span class="s8">'-'</span><span class="s7">);</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s12">return</span><span class="s1"> </span><span class="s8">`</span><span class="s7">${</span><span class="s1">year</span><span class="s7">.</span><span class="s1">slice</span><span class="s7">(-</span><span class="s14">2</span><span class="s7">)}${</span><span class="s1">month</span><span class="s7">}${</span><span class="s1">day</span><span class="s7">}</span><span class="s8">`</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s7">}</span></p>
+<p class="p6"><span class="s10"></span><br></p>
+<p class="p5"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s1">// Set initial creation date to today</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span>creationDateInput</span><span class="s7">.</span><span class="s1">value </span><span class="s7">=</span><span class="s1"> getTodayDateForInput</span><span class="s7">();</span></p>
+<p class="p6"><span class="s10"></span><br></p>
+<p class="p5"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s1">// Event listener for prefix selection/custom input</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span>prefixSelect</span><span class="s7">.</span><span class="s1">addEventListener</span><span class="s7">(</span><span class="s8">'change'</span><span class="s7">,</span><span class="s1"> </span><span class="s7">()</span><span class="s1"> </span><span class="s7">=&gt;</span><span class="s1"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s12">if</span><span class="s1"> </span><span class="s7">(</span><span class="s1">prefixSelect</span><span class="s7">.</span><span class="s1">value </span><span class="s7">===</span><span class="s1"> </span><span class="s8">"custom"</span><span class="s7">)</span><span class="s1"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span>prefixCustomWrapper</span><span class="s7">.</span><span class="s1">classList</span><span class="s7">.</span><span class="s1">remove</span><span class="s7">(</span><span class="s8">'hidden'</span><span class="s7">);</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span>prefixCustomInput</span><span class="s7">.</span><span class="s1">value </span><span class="s7">=</span><span class="s1"> </span><span class="s8">""</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s7">}</span><span class="s1"> </span><span class="s12">else</span><span class="s1"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span>prefixCustomWrapper</span><span class="s7">.</span><span class="s1">classList</span><span class="s7">.</span><span class="s1">add</span><span class="s7">(</span><span class="s8">'hidden'</span><span class="s7">);</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span>prefixCustomInput</span><span class="s7">.</span><span class="s1">value </span><span class="s7">=</span><span class="s1"> </span><span class="s8">""</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s7">}</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s7">});</span></p>
+<p class="p6"><span class="s10"></span><br></p>
+<p class="p5"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s1">// Event listener for category selection/custom input</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span>categorySelect</span><span class="s7">.</span><span class="s1">addEventListener</span><span class="s7">(</span><span class="s8">'change'</span><span class="s7">,</span><span class="s1"> </span><span class="s7">()</span><span class="s1"> </span><span class="s7">=&gt;</span><span class="s1"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s12">if</span><span class="s1"> </span><span class="s7">(</span><span class="s1">categorySelect</span><span class="s7">.</span><span class="s1">value </span><span class="s7">===</span><span class="s1"> </span><span class="s8">"custom"</span><span class="s7">)</span><span class="s1"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span>categoryCustomWrapper</span><span class="s7">.</span><span class="s1">classList</span><span class="s7">.</span><span class="s1">remove</span><span class="s7">(</span><span class="s8">'hidden'</span><span class="s7">);</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span>categoryCustomInput</span><span class="s7">.</span><span class="s1">value </span><span class="s7">=</span><span class="s1"> </span><span class="s8">""</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s7">}</span><span class="s1"> </span><span class="s12">else</span><span class="s1"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span>categoryCustomWrapper</span><span class="s7">.</span><span class="s1">classList</span><span class="s7">.</span><span class="s1">add</span><span class="s7">(</span><span class="s8">'hidden'</span><span class="s7">);</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span>categoryCustomInput</span><span class="s7">.</span><span class="s1">value </span><span class="s7">=</span><span class="s1"> </span><span class="s8">""</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s7">}</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s7">});</span></p>
+<p class="p6"><span class="s10"></span><br></p>
+<p class="p5"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s1">// Event listener for responsible person selection/custom input</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span>responsiblePersonSelect</span><span class="s7">.</span><span class="s1">addEventListener</span><span class="s7">(</span><span class="s8">'change'</span><span class="s7">,</span><span class="s1"> </span><span class="s7">()</span><span class="s1"> </span><span class="s7">=&gt;</span><span class="s1"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s12">if</span><span class="s1"> </span><span class="s7">(</span><span class="s1">responsiblePersonSelect</span><span class="s7">.</span><span class="s1">value </span><span class="s7">===</span><span class="s1"> </span><span class="s8">"custom"</span><span class="s7">)</span><span class="s1"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span>responsiblePersonCustomWrapper</span><span class="s7">.</span><span class="s1">classList</span><span class="s7">.</span><span class="s1">remove</span><span class="s7">(</span><span class="s8">'hidden'</span><span class="s7">);</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span>responsiblePersonCustomInput</span><span class="s7">.</span><span class="s1">value </span><span class="s7">=</span><span class="s1"> </span><span class="s8">""</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s7">}</span><span class="s1"> </span><span class="s12">else</span><span class="s1"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span>responsiblePersonCustomWrapper</span><span class="s7">.</span><span class="s1">classList</span><span class="s7">.</span><span class="s1">add</span><span class="s7">(</span><span class="s8">'hidden'</span><span class="s7">);</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span>responsiblePersonCustomInput</span><span class="s7">.</span><span class="s1">value </span><span class="s7">=</span><span class="s1"> </span><span class="s8">""</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s7">}</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s7">});</span></p>
+<p class="p6"><span class="s10"></span><br></p>
+<p class="p5"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s1">// Removed the suggestSubjectBtn event listener and associated Gemini API call</span></p>
+<p class="p6"><span class="s10"></span><br></p>
+<p class="p5"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s1">// Event listener for generate button</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span>generateBtn</span><span class="s7">.</span><span class="s1">addEventListener</span><span class="s7">(</span><span class="s8">'click'</span><span class="s7">,</span><span class="s1"> </span><span class="s7">()</span><span class="s1"> </span><span class="s7">=&gt;</span><span class="s1"> </span><span class="s7">{</span></p>
+<p class="p5"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s1">// Reset error messages</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span>prefixError</span><span class="s7">.</span><span class="s1">classList</span><span class="s7">.</span><span class="s1">add</span><span class="s7">(</span><span class="s8">'hidden'</span><span class="s7">);</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span>categoryError</span><span class="s7">.</span><span class="s1">classList</span><span class="s7">.</span><span class="s1">add</span><span class="s7">(</span><span class="s8">'hidden'</span><span class="s7">);</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span>subjectError</span><span class="s7">.</span><span class="s1">classList</span><span class="s7">.</span><span class="s1">add</span><span class="s7">(</span><span class="s8">'hidden'</span><span class="s7">);</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span>copyMessage</span><span class="s7">.</span><span class="s1">classList</span><span class="s7">.</span><span class="s1">add</span><span class="s7">(</span><span class="s8">'hidden'</span><span class="s7">);</span></p>
+<p class="p6"><span class="s10"></span><br></p>
+<p class="p5"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s1">// Get values from inputs</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s12">let</span><span class="s1"> selectedPrefix</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s12">if</span><span class="s1"> </span><span class="s7">(</span><span class="s1">prefixSelect</span><span class="s7">.</span><span class="s1">value </span><span class="s7">===</span><span class="s1"> </span><span class="s8">"custom"</span><span class="s7">)</span><span class="s1"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span>selectedPrefix </span><span class="s7">=</span><span class="s1"> prefixCustomInput</span><span class="s7">.</span><span class="s1">value</span><span class="s7">.</span><span class="s1">trim</span><span class="s7">();</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s7">}</span><span class="s1"> </span><span class="s12">else</span><span class="s1"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span>selectedPrefix </span><span class="s7">=</span><span class="s1"> prefixSelect</span><span class="s7">.</span><span class="s1">value</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s7">}</span></p>
+<p class="p6"><span class="s10"></span><br></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s12">let</span><span class="s1"> category</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s12">if</span><span class="s1"> </span><span class="s7">(</span><span class="s1">categorySelect</span><span class="s7">.</span><span class="s1">value </span><span class="s7">===</span><span class="s1"> </span><span class="s8">"custom"</span><span class="s7">)</span><span class="s1"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span>category </span><span class="s7">=</span><span class="s1"> categoryCustomInput</span><span class="s7">.</span><span class="s1">value</span><span class="s7">.</span><span class="s1">trim</span><span class="s7">();</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s7">}</span><span class="s1"> </span><span class="s12">else</span><span class="s1"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span>category </span><span class="s7">=</span><span class="s1"> categorySelect</span><span class="s7">.</span><span class="s1">value</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s7">}</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s12">const</span><span class="s1"> subject </span><span class="s7">=</span><span class="s1"> subjectInput</span><span class="s7">.</span><span class="s1">value</span><span class="s7">.</span><span class="s1">trim</span><span class="s7">();</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s12">const</span><span class="s1"> version </span><span class="s7">=</span><span class="s1"> versionInput</span><span class="s7">.</span><span class="s1">value</span><span class="s7">.</span><span class="s1">trim</span><span class="s7">();</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s12">const</span><span class="s1"> creationDateRaw </span><span class="s7">=</span><span class="s1"> creationDateInput</span><span class="s7">.</span><span class="s1">value</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s12">const</span><span class="s1"> creationDateFormatted </span><span class="s7">=</span><span class="s1"> formatToYYMMDD</span><span class="s7">(</span><span class="s1">creationDateRaw</span><span class="s7">);</span></p>
+<p class="p6"><span class="s10"></span><br></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s12">let</span><span class="s1"> responsiblePerson</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s12">if</span><span class="s1"> </span><span class="s7">(</span><span class="s1">responsiblePersonSelect</span><span class="s7">.</span><span class="s1">value </span><span class="s7">===</span><span class="s1"> </span><span class="s8">"custom"</span><span class="s7">)</span><span class="s1"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span>responsiblePerson </span><span class="s7">=</span><span class="s1"> responsiblePersonCustomInput</span><span class="s7">.</span><span class="s1">value</span><span class="s7">.</span><span class="s1">trim</span><span class="s7">();</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s7">}</span><span class="s1"> </span><span class="s12">else</span><span class="s1"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span>responsiblePerson </span><span class="s7">=</span><span class="s1"> responsiblePersonSelect</span><span class="s7">.</span><span class="s1">value</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s7">}</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s12">const</span><span class="s1"> notes </span><span class="s7">=</span><span class="s1"> notesInput</span><span class="s7">.</span><span class="s1">value</span><span class="s7">.</span><span class="s1">trim</span><span class="s7">();</span></p>
+<p class="p6"><span class="s10"></span><br></p>
+<p class="p5"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s1">// Validate mandatory fields</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s12">let</span><span class="s1"> isValid </span><span class="s7">=</span><span class="s1"> </span><span class="s12">true</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s12">if</span><span class="s1"> </span><span class="s7">(!</span><span class="s1">selectedPrefix</span><span class="s7">)</span><span class="s1"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span>prefixError</span><span class="s7">.</span><span class="s1">classList</span><span class="s7">.</span><span class="s1">remove</span><span class="s7">(</span><span class="s8">'hidden'</span><span class="s7">);</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span>isValid </span><span class="s7">=</span><span class="s1"> </span><span class="s12">false</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s7">}</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s12">if</span><span class="s1"> </span><span class="s7">(!</span><span class="s1">category</span><span class="s7">)</span><span class="s1"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span>categoryError</span><span class="s7">.</span><span class="s1">classList</span><span class="s7">.</span><span class="s1">remove</span><span class="s7">(</span><span class="s8">'hidden'</span><span class="s7">);</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span>isValid </span><span class="s7">=</span><span class="s1"> </span><span class="s12">false</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s7">}</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s12">if</span><span class="s1"> </span><span class="s7">(!</span><span class="s1">subject</span><span class="s7">)</span><span class="s1"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span>subjectError</span><span class="s7">.</span><span class="s1">classList</span><span class="s7">.</span><span class="s1">remove</span><span class="s7">(</span><span class="s8">'hidden'</span><span class="s7">);</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span>isValid </span><span class="s7">=</span><span class="s1"> </span><span class="s12">false</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s7">}</span></p>
+<p class="p6"><span class="s10"></span><br></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s12">if</span><span class="s1"> </span><span class="s7">(!</span><span class="s1">isValid</span><span class="s7">)</span><span class="s1"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span>generatedFilenameDiv</span><span class="s7">.</span><span class="s1">textContent </span><span class="s7">=</span><span class="s1"> </span><span class="s8">"請填寫所有必填欄位。"</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span>generatedFilenameDiv</span><span class="s7">.</span><span class="s1">style</span><span class="s7">.</span><span class="s1">color </span><span class="s7">=</span><span class="s1"> </span><span class="s8">'#ef4444'</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span></span><span class="s12">return</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s7">}</span></p>
+<p class="p6"><span class="s10"></span><br></p>
+<p class="p5"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s1">// Apply abbreviations</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s12">const</span><span class="s1"> abbrevPrefix </span><span class="s7">=</span><span class="s1"> prefixMap</span><span class="s7">[</span><span class="s1">selectedPrefix</span><span class="s7">]</span><span class="s1"> </span><span class="s7">||</span><span class="s1"> selectedPrefix</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s12">const</span><span class="s1"> abbrevCategory </span><span class="s7">=</span><span class="s1"> categoryMap</span><span class="s7">[</span><span class="s1">category</span><span class="s7">]</span><span class="s1"> </span><span class="s7">||</span><span class="s1"> category</span><span class="s7">;</span></p>
+<p class="p6"><span class="s10"></span><br></p>
+<p class="p5"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s1">// Construct filename parts, ensuring each is trimmed</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s12">const</span><span class="s1"> parts </span><span class="s7">=</span><span class="s1"> </span><span class="s7">[</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span>abbrevPrefix</span><span class="s7">,</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span>abbrevCategory</span><span class="s7">,</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span>subject</span><span class="s7">,</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span>version</span><span class="s7">,</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span>creationDateFormatted</span><span class="s7">,</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span>responsiblePerson</span><span class="s7">,</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span>notes</span></p>
+<p class="p5"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s7">].</span><span class="s5">map</span><span class="s7">(</span><span class="s5">part </span><span class="s7">=&gt;</span><span class="s5"> part</span><span class="s7">.</span><span class="s5">trim</span><span class="s7">());</span><span class="s5"> </span><span class="s1">// Trim each part to handle potential extra spaces</span></p>
+<p class="p6"><span class="s10"></span><br></p>
+<p class="p5"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s1">// Filter out empty strings before joining to prevent consecutive underscores and trailing underscores</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s12">const</span><span class="s1"> filteredParts </span><span class="s7">=</span><span class="s1"> parts</span><span class="s7">.</span><span class="s1">filter</span><span class="s7">(</span><span class="s1">part </span><span class="s7">=&gt;</span><span class="s1"> part </span><span class="s7">!==</span><span class="s1"> </span><span class="s8">''</span><span class="s7">);</span></p>
+<p class="p6"><span class="s10"></span><br></p>
+<p class="p5"><span class="s5"><span class="Apple-converted-space">            </span></span><span class="s1">// Join parts with underscore</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s12">const</span><span class="s1"> filename </span><span class="s7">=</span><span class="s1"> filteredParts</span><span class="s7">.</span><span class="s1">join</span><span class="s7">(</span><span class="s8">'_'</span><span class="s7">);</span></p>
+<p class="p6"><span class="s10"></span><br></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span>generatedFilenameDiv</span><span class="s7">.</span><span class="s1">textContent </span><span class="s7">=</span><span class="s1"> filename</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span>generatedFilenameDiv</span><span class="s7">.</span><span class="s1">style</span><span class="s7">.</span><span class="s1">color </span><span class="s7">=</span><span class="s1"> </span><span class="s8">'#1e40af'</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s7">});</span></p>
+<p class="p6"><span class="s10"></span><br></p>
+<p class="p5"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s1">// Event listener for copy button</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span>copyBtn</span><span class="s7">.</span><span class="s1">addEventListener</span><span class="s7">(</span><span class="s8">'click'</span><span class="s7">,</span><span class="s1"> </span><span class="s7">()</span><span class="s1"> </span><span class="s7">=&gt;</span><span class="s1"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s12">const</span><span class="s1"> filename </span><span class="s7">=</span><span class="s1"> generatedFilenameDiv</span><span class="s7">.</span><span class="s1">textContent</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s12">if</span><span class="s1"> </span><span class="s7">(</span><span class="s1">filename </span><span class="s7">&amp;&amp;</span><span class="s1"> filename </span><span class="s7">!==</span><span class="s1"> </span><span class="s8">"請填寫所有必填欄位。"</span><span class="s7">)</span><span class="s1"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span></span><span class="s12">const</span><span class="s1"> textArea </span><span class="s7">=</span><span class="s1"> document</span><span class="s7">.</span><span class="s1">createElement</span><span class="s7">(</span><span class="s8">"textarea"</span><span class="s7">);</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span>textArea</span><span class="s7">.</span><span class="s1">value </span><span class="s7">=</span><span class="s1"> filename</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span>document</span><span class="s7">.</span><span class="s1">body</span><span class="s7">.</span><span class="s1">appendChild</span><span class="s7">(</span><span class="s1">textArea</span><span class="s7">);</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span>textArea</span><span class="s7">.</span><span class="s1">select</span><span class="s7">();</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span></span><span class="s12">try</span><span class="s1"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                    </span>document</span><span class="s7">.</span><span class="s1">execCommand</span><span class="s7">(</span><span class="s8">'copy'</span><span class="s7">);</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                    </span>copyMessage</span><span class="s7">.</span><span class="s1">classList</span><span class="s7">.</span><span class="s1">remove</span><span class="s7">(</span><span class="s8">'hidden'</span><span class="s7">);</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                    </span>setTimeout</span><span class="s7">(()</span><span class="s1"> </span><span class="s7">=&gt;</span><span class="s1"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                        </span>copyMessage</span><span class="s7">.</span><span class="s1">classList</span><span class="s7">.</span><span class="s1">add</span><span class="s7">(</span><span class="s8">'hidden'</span><span class="s7">);</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                    </span></span><span class="s7">},</span><span class="s1"> </span><span class="s14">2000</span><span class="s7">);</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span></span><span class="s7">}</span><span class="s1"> </span><span class="s12">catch</span><span class="s1"> </span><span class="s7">(</span><span class="s1">err</span><span class="s7">)</span><span class="s1"> </span><span class="s7">{</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                    </span>console</span><span class="s7">.</span><span class="s1">error</span><span class="s7">(</span><span class="s8">'Failed to copy: '</span><span class="s7">,</span><span class="s1"> err</span><span class="s7">);</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                    </span></span><span class="s12">const</span><span class="s1"> modal </span><span class="s7">=</span><span class="s1"> document</span><span class="s7">.</span><span class="s1">createElement</span><span class="s7">(</span><span class="s8">'div'</span><span class="s7">);</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                    </span>modal</span><span class="s7">.</span><span class="s1">style</span><span class="s7">.</span><span class="s1">cssText </span><span class="s7">=</span><span class="s1"> </span><span class="s8">`</span></p>
+<p class="p7"><span class="s1"><span class="Apple-converted-space">                        </span>position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);</span></p>
+<p class="p7"><span class="s1"><span class="Apple-converted-space">                        </span>background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);</span></p>
+<p class="p7"><span class="s1"><span class="Apple-converted-space">                        </span>z-index: 1000; text-align: center;</span></p>
+<p class="p7"><span class="s1"><span class="Apple-converted-space">                    </span>`</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                    </span>modal</span><span class="s7">.</span><span class="s1">innerHTML </span><span class="s7">=</span><span class="s1"> </span><span class="s8">`</span></p>
+<p class="p7"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;p&gt;無法自動複製，請手動複製檔案名稱：&lt;/p&gt;</span></p>
+<p class="p7"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;textarea style="width: 100%; margin-top: 10px; padding: 5px;" readonly&gt;</span><span class="s7">${</span><span class="s5">filename</span><span class="s7">}</span><span class="s1">&lt;/textarea&gt;</span></p>
+<p class="p7"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;button onclick="this.parentNode.remove()" style="margin-top: 15px; padding: 8px 15px; background-color: #3b82f6; color: white; border-radius: 5px; cursor: pointer;"&gt;關閉&lt;/button&gt;</span></p>
+<p class="p7"><span class="s1"><span class="Apple-converted-space">                    </span>`</span><span class="s7">;</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                    </span>document</span><span class="s7">.</span><span class="s1">body</span><span class="s7">.</span><span class="s1">appendChild</span><span class="s7">(</span><span class="s1">modal</span><span class="s7">);</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span></span><span class="s7">}</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">                </span>document</span><span class="s7">.</span><span class="s1">body</span><span class="s7">.</span><span class="s1">removeChild</span><span class="s7">(</span><span class="s1">textArea</span><span class="s7">);</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s7">}</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s7">});</span></p>
+<p class="p1"><span class="s5"><span class="Apple-converted-space">    </span></span><span class="s3">&lt;/</span><span class="s1">script</span><span class="s3">&gt;</span></p>
+<p class="p1"><span class="s3">&lt;/</span><span class="s1">body</span><span class="s3">&gt;</span></p>
+<p class="p1"><span class="s3">&lt;/</span><span class="s1">html</span><span class="s3">&gt;</span></p>
+<p class="p6"><span class="s10"></span><br></p>
 </body>
-
 </html>
-
