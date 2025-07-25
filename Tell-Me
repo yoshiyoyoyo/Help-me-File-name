@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>檔案名稱生成器</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #334155;
+        }
+        input[type="text"],
+        input[type="date"],
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 16px;
+            color: #334155;
+            background-color: #f8fafc;
+            transition: border-color 0.2s;
+            min-height: 44px; /* Ensure consistent height for select and input */
+            box-sizing: border-box; /* Ensure consistent box model */
+        }
+        /* Specific alignment for select elements */
+        select {
+            text-indent: 2px; /* Adjust this value for visual alignment */
+        }
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+        }
+        .required::after {
+            content: '*';
+            color: #ef4444;
+            margin-left: 4px;
+        }
+        .button-primary {
+            background-color: #3b82f6;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            width: 100%;
+            border: none;
+        }
+        .button-primary:hover {
+            background-color: #2563eb;
+            transform: translateY(-1px);
+        }
+        .button-primary:active {
+            transform: translateY(0);
+        }
+        .output-section {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e0f2fe;
+            border-radius: 8px;
+            border: 1px solid #93c5fd;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+        #generatedFilename {
+            background-color: #ffffff;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #a7d9f8;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 16px;
+            color: #1e40af;
+            width: 100%;
+            word-break: break-all; /* Ensures long filenames wrap */
+            text-align: center;
+        }
+        .copy-button {
+            background-color: #10b981;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .copy-button:hover {
+            background-color: #059669;
+            transform: translateY(-1px);
+        }
+        .copy-button:active {
+            transform: translateY(0);
+        }
+        .error-message {
+            color: #ef4444;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        /* Flex container for select and custom input */
+        .select-with-custom, .input-with-button {
+            display: flex;
+            gap: 10px;
+            align-items: center; /* Align items vertically */
+        }
+        .select-with-custom select, .input-with-button input {
+            flex: 1; /* Allow select/input to take available space */
+        }
+        .select-with-custom .custom-input-wrapper {
+            flex: 1; /* Allow custom input wrapper to take available space */
+        }
+        .hidden {
+            display: none;
+        }
+        /* Removed .suggest-button and .loading-spinner styles as the feature is removed */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">檔案名稱生成器</h1>
+
+        <div class="form-group">
+            <label for="prefix" class="required">前綴</label>
+            <div class="select-with-custom">
+                <select id="prefixSelect" class="w-full">
+                    <option value="">請選擇前綴</option>
+                    <option value="Gama Play">Gama Play (GP)</option>
+                    <option value="Gamania Web">Gamania Web (GM)</option>
+                    <option value="Glaxy">Glaxy (GXY)</option>
+                    <option value="平台發展部">平台發展部 (PL)</option>
+                    <option value="custom">自訂</option> <!-- Added custom option for prefix -->
+                </select>
+                <div id="prefixCustomWrapper" class="custom-input-wrapper hidden"> <!-- Wrapper for custom prefix input -->
+                    <input type="text" id="prefixCustom" placeholder="請輸入自訂前綴">
+                </div>
+            </div>
+            <div id="prefixError" class="error-message hidden">請選擇或輸入前綴。</div>
+        </div>
+
+        <div class="form-group">
+            <label for="category" class="required">類別</label>
+            <div class="select-with-custom">
+                <select id="categorySelect" class="w-full">
+                    <option value="">請選擇類別</option>
+                    <option value="產品需求文件">產品需求文件 (PRD)</option>
+                    <option value="會議記錄">會議記錄 (MoM)</option>
+                    <option value="軟體測試報告">軟體測試報告 (STR)</option>
+                    <option value="custom">自訂</option>
+                </select>
+                <div id="categoryCustomWrapper" class="custom-input-wrapper hidden">
+                    <input type="text" id="categoryCustom" placeholder="請輸入自訂類別">
+                </div>
+            </div>
+            <div id="categoryError" class="error-message hidden">請選擇或輸入類別。</div>
+        </div>
+
+        <div class="form-group">
+            <label for="subject" class="required">檔案主旨</label>
+            <!-- Removed the suggest subject button and its wrapper -->
+            <input type="text" id="subject" placeholder="請輸入檔案主旨">
+            <div id="subjectError" class="error-message hidden">請輸入檔案主旨。</div>
+        </div>
+
+        <div class="form-group">
+            <label for="version">版本號</label>
+            <input type="text" id="version" placeholder="例如: v1.0 或 v1.1">
+        </div>
+
+        <div class="form-group">
+            <label for="creationDate">創建日期</label>
+            <input type="date" id="creationDate">
+        </div>
+
+        <div class="form-group">
+            <label for="responsiblePerson">負責人名稱</label>
+            <div class="select-with-custom">
+                <select id="responsiblePersonSelect" class="w-full">
+                    <option value="">請選擇或自訂負責人</option>
+                    <option value="Mel">Mel</option>
+                    <option value="Yoshi">Yoshi</option>
+                    <option value="Eric">Eric</option>
+                    <option value="Iris">Iris</option>
+                    <option value="Jenny">Jenny</option>
+                    <option value="In">In</option>
+                    <option value="小鬼">小鬼</option>
+                    <option value="Tommy">Tommy</option> <!-- Added Tommy -->
+                    <option value="custom">自訂</option>
+                </select>
+                <div id="responsiblePersonCustomWrapper" class="custom-input-wrapper hidden">
+                    <input type="text" id="responsiblePersonCustom" placeholder="請輸入自訂負責人">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="notes">特殊備註</label>
+            <input type="text" id="notes" placeholder="例如: 給Jack為4JacK">
+        </div>
+
+        <button id="generateBtn" class="button-primary">生成檔案名稱</button>
+
+        <div class="output-section">
+            <label for="generatedFilename" class="font-bold text-blue-800">生成的檔案名稱</label>
+            <div id="generatedFilename"></div>
+            <button id="copyBtn" class="copy-button">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+                    <path fill-rule="evenodd" d="M15.75 4.5a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-9a3 3 0 0 1-3-3v-9a3 3 0 0 1 3-3h9Zm.75 2.25a.75.75 0 0 0-1.5 0v.75h-.75a.75.75 0 0 0 0 1.5h.75v.75a.75.75 0 0 0 1.5 0v-.75h.75a.75.75 0 0 0 0-1.5h-.75V6.75Zm-9.75 2.25a.75.75 0 0 0-1.5 0v.75h-.75a.75.75 0 0 0 0 1.5h.75v.75a.75.75 0 0 0 1.5 0v-.75h.75a.75.75 0 0 0 0-1.5h-.75V9Zm-1.5 6.75a.75.75 0 0 0 0 1.5h.75v.75a.75.75 0 0 0 1.5 0v-.75h.75a.75.75 0 0 0 0-1.5h-.75v-.75a.75.75 0 0 0-1.5 0v.75h-.75Z" clip-rule="evenodd" />
+                </svg>
+                複製檔案名稱
+            </button>
+            <div id="copyMessage" class="text-green-600 text-sm hidden">已複製！</div>
+        </div>
+    </div>
+
+    <script>
+        // Get references to DOM elements
+        const prefixSelect = document.getElementById('prefixSelect'); // Updated ID
+        const prefixCustomInput = document.getElementById('prefixCustom'); // New
+        const prefixCustomWrapper = document.getElementById('prefixCustomWrapper'); // New
+
+        const categorySelect = document.getElementById('categorySelect');
+        const categoryCustomInput = document.getElementById('categoryCustom');
+        const categoryCustomWrapper = document.getElementById('categoryCustomWrapper');
+
+        const subjectInput = document.getElementById('subject');
+        // Removed references to suggestSubjectBtn, suggestSubjectText, suggestSubjectSpinner
+
+        const versionInput = document.getElementById('version');
+        const creationDateInput = document.getElementById('creationDate');
+
+        const responsiblePersonSelect = document.getElementById('responsiblePersonSelect');
+        const responsiblePersonCustomInput = document.getElementById('responsiblePersonCustom');
+        const responsiblePersonCustomWrapper = document.getElementById('responsiblePersonCustomWrapper');
+
+        const notesInput = document.getElementById('notes');
+        const generateBtn = document.getElementById('generateBtn');
+        const generatedFilenameDiv = document.getElementById('generatedFilename');
+        const copyBtn = document.getElementById('copyBtn');
+        const copyMessage = document.getElementById('copyMessage');
+
+        // Error message elements
+        const prefixError = document.getElementById('prefixError');
+        const categoryError = document.getElementById('categoryError');
+        const subjectError = document.getElementById('subjectError');
+
+        // Mapping for prefix abbreviations
+        const prefixMap = {
+            'Gama Play': 'GP',
+            'Gamania Web': 'GM',
+            'Glaxy': 'GXY',
+            '平台發展部': 'PL'
+        };
+
+        // Mapping for category abbreviations
+        const categoryMap = {
+            '產品需求文件': 'PRD',
+            '會議記錄': 'MoM',
+            '軟體測試報告': 'STR'
+        };
+
+        // Function to get today's date in YYYY-MM-DD format for date input
+        function getTodayDateForInput() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // Function to format a YYYY-MM-DD date to YYMMDD
+        function formatToYYMMDD(dateString) {
+            if (!dateString) return '';
+            const [year, month, day] = dateString.split('-');
+            return `${year.slice(-2)}${month}${day}`;
+        }
+
+        // Set initial creation date to today
+        creationDateInput.value = getTodayDateForInput();
+
+        // Event listener for prefix selection/custom input
+        prefixSelect.addEventListener('change', () => {
+            if (prefixSelect.value === "custom") {
+                prefixCustomWrapper.classList.remove('hidden');
+                prefixCustomInput.value = "";
+            } else {
+                prefixCustomWrapper.classList.add('hidden');
+                prefixCustomInput.value = "";
+            }
+        });
+
+        // Event listener for category selection/custom input
+        categorySelect.addEventListener('change', () => {
+            if (categorySelect.value === "custom") {
+                categoryCustomWrapper.classList.remove('hidden');
+                categoryCustomInput.value = "";
+            } else {
+                categoryCustomWrapper.classList.add('hidden');
+                categoryCustomInput.value = "";
+            }
+        });
+
+        // Event listener for responsible person selection/custom input
+        responsiblePersonSelect.addEventListener('change', () => {
+            if (responsiblePersonSelect.value === "custom") {
+                responsiblePersonCustomWrapper.classList.remove('hidden');
+                responsiblePersonCustomInput.value = "";
+            } else {
+                responsiblePersonCustomWrapper.classList.add('hidden');
+                responsiblePersonCustomInput.value = "";
+            }
+        });
+
+        // Removed the suggestSubjectBtn event listener and associated Gemini API call
+
+        // Event listener for generate button
+        generateBtn.addEventListener('click', () => {
+            // Reset error messages
+            prefixError.classList.add('hidden');
+            categoryError.classList.add('hidden');
+            subjectError.classList.add('hidden');
+            copyMessage.classList.add('hidden');
+
+            // Get values from inputs
+            let selectedPrefix;
+            if (prefixSelect.value === "custom") {
+                selectedPrefix = prefixCustomInput.value.trim();
+            } else {
+                selectedPrefix = prefixSelect.value;
+            }
+
+            let category;
+            if (categorySelect.value === "custom") {
+                category = categoryCustomInput.value.trim();
+            } else {
+                category = categorySelect.value;
+            }
+            const subject = subjectInput.value.trim();
+            const version = versionInput.value.trim();
+            const creationDateRaw = creationDateInput.value;
+            const creationDateFormatted = formatToYYMMDD(creationDateRaw);
+
+            let responsiblePerson;
+            if (responsiblePersonSelect.value === "custom") {
+                responsiblePerson = responsiblePersonCustomInput.value.trim();
+            } else {
+                responsiblePerson = responsiblePersonSelect.value;
+            }
+            const notes = notesInput.value.trim();
+
+            // Validate mandatory fields
+            let isValid = true;
+            if (!selectedPrefix) {
+                prefixError.classList.remove('hidden');
+                isValid = false;
+            }
+            if (!category) {
+                categoryError.classList.remove('hidden');
+                isValid = false;
+            }
+            if (!subject) {
+                subjectError.classList.remove('hidden');
+                isValid = false;
+            }
+
+            if (!isValid) {
+                generatedFilenameDiv.textContent = "請填寫所有必填欄位。";
+                generatedFilenameDiv.style.color = '#ef4444';
+                return;
+            }
+
+            // Apply abbreviations
+            const abbrevPrefix = prefixMap[selectedPrefix] || selectedPrefix;
+            const abbrevCategory = categoryMap[category] || category;
+
+            // Construct filename parts, ensuring each is trimmed
+            const parts = [
+                abbrevPrefix,
+                abbrevCategory,
+                subject,
+                version,
+                creationDateFormatted,
+                responsiblePerson,
+                notes
+            ].map(part => part.trim()); // Trim each part to handle potential extra spaces
+
+            // Filter out empty strings before joining to prevent consecutive underscores and trailing underscores
+            const filteredParts = parts.filter(part => part !== '');
+
+            // Join parts with underscore
+            const filename = filteredParts.join('_');
+
+            generatedFilenameDiv.textContent = filename;
+            generatedFilenameDiv.style.color = '#1e40af';
+        });
+
+        // Event listener for copy button
+        copyBtn.addEventListener('click', () => {
+            const filename = generatedFilenameDiv.textContent;
+            if (filename && filename !== "請填寫所有必填欄位。") {
+                const textArea = document.createElement("textarea");
+                textArea.value = filename;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    copyMessage.classList.remove('hidden');
+                    setTimeout(() => {
+                        copyMessage.classList.add('hidden');
+                    }, 2000);
+                } catch (err) {
+                    console.error('Failed to copy: ', err);
+                    const modal = document.createElement('div');
+                    modal.style.cssText = `
+                        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                        background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                        z-index: 1000; text-align: center;
+                    `;
+                    modal.innerHTML = `
+                        <p>無法自動複製，請手動複製檔案名稱：</p>
+                        <textarea style="width: 100%; margin-top: 10px; padding: 5px;" readonly>${filename}</textarea>
+                        <button onclick="this.parentNode.remove()" style="margin-top: 15px; padding: 8px 15px; background-color: #3b82f6; color: white; border-radius: 5px; cursor: pointer;">關閉</button>
+                    `;
+                    document.body.appendChild(modal);
+                }
+                document.body.removeChild(textArea);
+            }
+        });
+    </script>
+</body>
+</html>
