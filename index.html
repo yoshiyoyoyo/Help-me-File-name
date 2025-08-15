@@ -145,6 +145,7 @@
         .hidden {
             display: none;
         }
+        /* Removed .suggest-button and .loading-spinner styles as the feature is removed */
     </style>
 </head>
 <body>
@@ -160,10 +161,8 @@
                     <option value="Gamania Web">Gamania Web (GM)</option>
                     <option value="Glaxy">Glaxy (GXY)</option>
                     <option value="平台發展部">平台發展部 (PL)</option>
-                    <option value="custom">自訂</option>
-                </select>
-                <div id="prefixCustomWrapper" class="custom-input-wrapper hidden">
-                    <input type="text" id="prefixCustom" placeholder="請輸入自訂前綴">
+                    <option value="custom">自訂</option> </select>
+                <div id="prefixCustomWrapper" class="custom-input-wrapper hidden"> <input type="text" id="prefixCustom" placeholder="請輸入自訂前綴">
                 </div>
             </div>
             <div id="prefixError" class="error-message hidden">請選擇或輸入前綴。</div>
@@ -194,7 +193,8 @@
 
         <div class="form-group">
             <label for="version">版本號</label>
-            <input type="text" id="version" placeholder="例如: 1.0 或 1.1"> </div>
+            <input type="text" id="version" placeholder="例如: 1.0 或 1.1">
+        </div>
 
         <div class="form-group">
             <label for="creationDate">創建日期</label>
@@ -213,8 +213,7 @@
                     <option value="Jenny">Jenny</option>
                     <option value="In">In</option>
                     <option value="小鬼">小鬼</option>
-                    <option value="Tommy">Tommy</option>
-                    <option value="custom">自訂</option>
+                    <option value="Tommy">Tommy</option> <option value="custom">自訂</option>
                 </select>
                 <div id="responsiblePersonCustomWrapper" class="custom-input-wrapper hidden">
                     <input type="text" id="responsiblePersonCustom" placeholder="請輸入自訂負責人">
@@ -253,7 +252,8 @@
         const categoryCustomWrapper = document.getElementById('categoryCustomWrapper');
 
         const subjectInput = document.getElementById('subject');
-        const versionInput = document.getElementById('version');
+        
+        const versionInput = document.getElementById('version'); // MODIFIED
         const creationDateInput = document.getElementById('creationDate');
 
         const responsiblePersonSelect = document.getElementById('responsiblePersonSelect');
@@ -300,6 +300,13 @@
             if (!dateString) return '';
             const [year, month, day] = dateString.split('-');
             return `${year.slice(-2)}${month}${day}`;
+        }
+        
+        // NEW function to format version number
+        function formatVersion(version) {
+            if (!version) return '';
+            const cleanedVersion = version.toLowerCase().startsWith('v') ? version.slice(1) : version;
+            return `v${cleanedVersion.replace(/\./g, '-')}`;
         }
 
         // Set initial creation date to today
@@ -361,7 +368,7 @@
                 category = categorySelect.value;
             }
             const subject = subjectInput.value.trim();
-            const version = versionInput.value.trim();
+            const version = formatVersion(versionInput.value.trim()); // MODIFIED: Call new formatVersion function
             const creationDateRaw = creationDateInput.value;
             const creationDateFormatted = formatToYYMMDD(creationDateRaw);
 
@@ -393,13 +400,6 @@
                 generatedFilenameDiv.style.color = '#ef4444';
                 return;
             }
-            
-            // --- New version formatting logic ---
-            let formattedVersion = '';
-            if (version) {
-                formattedVersion = version.replace(/^v|V/, '').replace(/\./g, '-');
-            }
-            // --- End of new logic ---
 
             // Apply abbreviations
             const abbrevPrefix = prefixMap[selectedPrefix] || selectedPrefix;
@@ -410,7 +410,7 @@
                 abbrevPrefix,
                 abbrevCategory,
                 subject,
-                formattedVersion, // Use the new formatted version
+                version, // Use the formatted version
                 creationDateFormatted,
                 responsiblePerson,
                 notes
