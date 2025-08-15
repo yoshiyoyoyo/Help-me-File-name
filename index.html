@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>檔案名稱生成器</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
@@ -146,7 +145,6 @@
         .hidden {
             display: none;
         }
-        /* Removed .suggest-button and .loading-spinner styles as the feature is removed */
     </style>
 </head>
 <body>
@@ -162,9 +160,9 @@
                     <option value="Gamania Web">Gamania Web (GM)</option>
                     <option value="Glaxy">Glaxy (GXY)</option>
                     <option value="平台發展部">平台發展部 (PL)</option>
-                    <option value="custom">自訂</option> <!-- Added custom option for prefix -->
+                    <option value="custom">自訂</option>
                 </select>
-                <div id="prefixCustomWrapper" class="custom-input-wrapper hidden"> <!-- Wrapper for custom prefix input -->
+                <div id="prefixCustomWrapper" class="custom-input-wrapper hidden">
                     <input type="text" id="prefixCustom" placeholder="請輸入自訂前綴">
                 </div>
             </div>
@@ -190,15 +188,13 @@
 
         <div class="form-group">
             <label for="subject" class="required">檔案主旨</label>
-            <!-- Removed the suggest subject button and its wrapper -->
             <input type="text" id="subject" placeholder="請輸入檔案主旨">
             <div id="subjectError" class="error-message hidden">請輸入檔案主旨。</div>
         </div>
 
         <div class="form-group">
             <label for="version">版本號</label>
-            <input type="text" id="version" placeholder="例如: v1.0 或 v1.1">
-        </div>
+            <input type="text" id="version" placeholder="例如: 1.0 或 1.1"> </div>
 
         <div class="form-group">
             <label for="creationDate">創建日期</label>
@@ -217,7 +213,7 @@
                     <option value="Jenny">Jenny</option>
                     <option value="In">In</option>
                     <option value="小鬼">小鬼</option>
-                    <option value="Tommy">Tommy</option> <!-- Added Tommy -->
+                    <option value="Tommy">Tommy</option>
                     <option value="custom">自訂</option>
                 </select>
                 <div id="responsiblePersonCustomWrapper" class="custom-input-wrapper hidden">
@@ -248,17 +244,15 @@
 
     <script>
         // Get references to DOM elements
-        const prefixSelect = document.getElementById('prefixSelect'); // Updated ID
-        const prefixCustomInput = document.getElementById('prefixCustom'); // New
-        const prefixCustomWrapper = document.getElementById('prefixCustomWrapper'); // New
+        const prefixSelect = document.getElementById('prefixSelect');
+        const prefixCustomInput = document.getElementById('prefixCustom');
+        const prefixCustomWrapper = document.getElementById('prefixCustomWrapper');
 
         const categorySelect = document.getElementById('categorySelect');
         const categoryCustomInput = document.getElementById('categoryCustom');
         const categoryCustomWrapper = document.getElementById('categoryCustomWrapper');
 
         const subjectInput = document.getElementById('subject');
-        // Removed references to suggestSubjectBtn, suggestSubjectText, suggestSubjectSpinner
-
         const versionInput = document.getElementById('version');
         const creationDateInput = document.getElementById('creationDate');
 
@@ -344,8 +338,6 @@
             }
         });
 
-        // Removed the suggestSubjectBtn event listener and associated Gemini API call
-
         // Event listener for generate button
         generateBtn.addEventListener('click', () => {
             // Reset error messages
@@ -401,6 +393,13 @@
                 generatedFilenameDiv.style.color = '#ef4444';
                 return;
             }
+            
+            // --- New version formatting logic ---
+            let formattedVersion = '';
+            if (version) {
+                formattedVersion = version.replace(/^v|V/, '').replace(/\./g, '-');
+            }
+            // --- End of new logic ---
 
             // Apply abbreviations
             const abbrevPrefix = prefixMap[selectedPrefix] || selectedPrefix;
@@ -411,11 +410,11 @@
                 abbrevPrefix,
                 abbrevCategory,
                 subject,
-                version,
+                formattedVersion, // Use the new formatted version
                 creationDateFormatted,
                 responsiblePerson,
                 notes
-            ].map(part => part.trim()); // Trim each part to handle potential extra spaces
+            ].map(part => part.trim());
 
             // Filter out empty strings before joining to prevent consecutive underscores and trailing underscores
             const filteredParts = parts.filter(part => part !== '');
